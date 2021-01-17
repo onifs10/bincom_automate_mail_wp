@@ -1,9 +1,8 @@
 <?php
 
-class BMA_Inbound_Contact{
+class BMA_Inbound_Message{
     const post_type = 'flamingo_inbound';
-
-    const mail_sent_status = '_bma_mail_sent';
+    const mail_sent_status = 'bma_contacted';
     const channel_taxonomy = 'flamingo_inbound_channel';
  
 	private static $found_items = 0;
@@ -96,7 +95,7 @@ class BMA_Inbound_Contact{
 	}
 
 	public static function count( $args = '' ) {
-		if ( $args ) {
+		if ( !$args ) {
 			$args = wp_parse_args( $args, array(
 				'offset' => 0,
 				'channel' => '',
