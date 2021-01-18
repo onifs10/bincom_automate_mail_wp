@@ -4,21 +4,12 @@ if (!defined('WPINC')) {
 	die;
 }
 class BmaFunctions extends BincomMailAutomation{
-    protected static $_instance = null;
-  
-    public static function getInstance()
-    {
-        if( null == self::$_instance ){
-			self::$_instance = new self;
-		}
-		return self::$_instance;
-    }
-    
+
     public function __construct()
     {  
         // call when WP loads
         add_action( 'wp', [$this,'bma_schedule_activation'], 10, 0 );
-        // hook bma_schedule_function to schedule event
+        // hook bma_schedule_function to schedule event created by the bma_scheule_activation 
         add_action( 'bma_daily_cron_job', [$this, 'bma_schedule_function'], 10, 0 );
        
     }
@@ -54,7 +45,7 @@ class BmaFunctions extends BincomMailAutomation{
             $class =  BincomClasses::findByCode($code);
             die(var_dump($class));
         }else{
-            die('not no class');
+            die('not a  class');
         }
 
     }   
