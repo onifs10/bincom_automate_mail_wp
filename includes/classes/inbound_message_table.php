@@ -172,6 +172,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 
     public function process_bulk_action() {
 
+        if( !array_key_exists('message', $_GET)){
+          return;
+        }
         //Detect when a bulk action is being triggered...
         if ( 'block' === $this->current_action() ) {
       

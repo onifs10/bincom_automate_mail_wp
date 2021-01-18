@@ -142,7 +142,7 @@ class BincomMailAutomation{
         
         $option = get_option('bma_settings');
         if(!$option){
-            add_option('bma_settings',  ['input_check' => 'default' , 'mail_sender' => 'proservices@bincom.net', 'mail_subject' => 'Bincom Academy ([class_name])']);    
+            add_option('bma_settings',  ['input_check' => 'default' , 'mail_sender' => 'proservices@bincom.net', 'mail_subject' => 'Bincom Academy ([class-name])']);    
         }
     }
 
