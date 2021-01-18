@@ -15,9 +15,10 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-define('BMASETTINGS', get_option('bma_settings'));
+
 class BincomMailAutomation{
     
+    public static $functions;
     protected static $_instance = null;
     protected $plugin_vars = [];
     public function __construct()
@@ -32,12 +33,13 @@ class BincomMailAutomation{
         if($this->is_request('admin')){
             $this->admin = new BmaAdminClass();
         }
+        self::$functions = new BmaFunctions();
     }
 
     public function defineConstant(){
         global $wpdb;
         $this->define('BMATABLE', $wpdb->prefix."bincom_automated_mail_details" );
-        // $this->define('INPUTCHECKED','role');
+        $this->define('BMASETTINGS', get_option('bma_settings'));
     }
     public function define($key, $value){
         if(!defined($key)){
@@ -72,6 +74,7 @@ class BincomMailAutomation{
 	}	
     private function load_required_files()
     {
+        $this->load_files($this->get_vars('PATH').'includes/classes/bma-*.php'); 
         if($this->is_request('admin')){
             $this->load_files($this->get_vars('PATH').'includes/admin/admin-class-init.php');            
         }
@@ -110,8 +113,11 @@ class BincomMailAutomation{
         if(!$this->checkTable($tablename,$wpdb)){
             dbDelta($main_sql_create);
         }
-        $sql = "ALTER TABLE `{$wpdb->prefix}posts`  ADD `contacted` VARCHAR(255) NULL DEFAULT NULL  AFTER `comment_count`;";
+        $sql = "ALTER TABLE `{$wpdb->prefix}posts`  ADD `contacted` VARCHAR(255) NULL DEFAULT 'pending'  AFTER `comment_count`;";
         maybe_add_column($wpdb->prefix.'posts','contacted',$sql);
+        
+        $option = get_option('bma_settings');
+        update_option('bma_settings', $option);    
     }
 
     private function checkTable($table_name, $wpdb){
@@ -145,6 +151,7 @@ if(!function_exists('BMA'))
 }
 
 register_activation_hook(__FILE__, [BMA(),'on_activation']);
+register_deactivation_hook( __FILE__, [BMA()::$functions, 'bma_schedule_deactivate'] );
 // register_uninstall_hook(__FILE__, [BMA(),'']) 
 // function example_function(){
 //     $string = 'this is an information of a very basic plugin';

@@ -38,11 +38,14 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 			'channel' => '',
 			'channel_id' => 0,
 			'hash' => '',
-		);
+      );
         return  BMA_Inbound_Message::find($args);
      }
     public static function record_count() {
-        return BMA_Inbound_Message::count();
+        $args = array(
+          'post_status' => 'any',
+        );
+        return BMA_Inbound_Message::count($args);
     }
     public function no_items() {
         _e( 'No inbound message found', 'bma' );
@@ -51,12 +54,15 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     public function column_subject( $item ) {
 
         // create a nonce
-        $delete_nonce = wp_create_nonce( 'bma_delete_class' );
-    
+        $block_nonce = wp_create_nonce( 'bma_block_inbound_message' );
+        $pending_nonce = wp_create_nonce( 'bma_pending_inbound_message' );
+        $mailed_nonce = wp_create_nonce( 'bma_mailed_inbound_message' );
         $title = '<strong>' . $item->subject . '</strong>';
     
         $actions = [
-        'block' => sprintf( '<a href="?page=%s&action=%s&class=%s">block</a>', esc_attr( $_REQUEST['page'] ), 'block_incoming', absint( $item->id() ) )
+        'block' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">block</a>', esc_attr( $_REQUEST['page'] ), 'block', absint( $item->id() ), $block_nonce ),
+        'pending' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">pending</a>', esc_attr( $_REQUEST['page'] ), 'pending', absint( $item->id() ), $pending_nonce ),
+        'mailed' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">mark as mailed</a>', esc_attr( $_REQUEST['page'] ), 'mailed', absint( $item->id() ), $mailed_nonce )
         ];
     
         return $title . $this->row_actions( $actions );
@@ -68,20 +74,20 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
           case 'subject':
           case 'from_email':
           case 'from_name':
-            // return "<a href='/{$item[$column_name]}' > {$item[$column_name]} </div>";
-          case 'feilds':
-          case 'class_time':
-          case 'class_link':
-          case 'mail_template':
-          case 'class_duration':
             return $item->$column_name;
+          case 'input_check':
+            return $item->$column_name ?? 'null';
+          case 'fields':
+            return $this->process_fields($item->fields);
+          case 'contacted':
+            return $item->details->$column_name ?? 'no' ;
           default:
             return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
       }
     public function column_cb( $item ) {
         return sprintf(
-        '<input type="checkbox" name="bulk-block[]" value="%s" />', $item->id()
+        '<input type="checkbox" name="bulk[]" value="%s" />', $item->id()
         );
     } 
     public function get_columns() {
@@ -91,12 +97,10 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         'subject'    => __( 'Subject', 'bma' ),
         'from_email' => __( 'From Email', 'bma' ),
         'from_name'    => __( 'From Name', 'bma' ),
-        // 'class_starts'    => __( 'Starts', 'bma' ),
-        // 'class_time' => __('Time','bma'),
-        // 'class_link' => __('Link','bma'),
-        // 'class_duration' => __('Duration','bma'),
-        // 'mail_template' => __('Mail Template', 'bma')
-        ];
+        'fields'    => __( 'Form Input  Fields', 'bma' ),
+        'input_check' => __('Input Checked : <strong>'.BMASETTINGS['input_check']."</strong>",'bma'),
+        'contacted' => __('Mail Sent','bma'),
+      ];
         return $columns;
     }
 
@@ -115,7 +119,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     }
     public function get_bulk_actions() {
         $actions = [
-        'bulk-block' => 'Block'
+        'bulk-block' => 'Block',
+        'bulk-mailed' => 'mailed',
+        'bulk-pending' => 'pending'
         ];
     
         return $actions;
@@ -127,7 +133,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         // $this->_column_headers = $this->get_column_info();
     
         /** Process bulk action */
-        // $this->process_bulk_action();
+        $this->process_bulk_action();
     
         $per_page     = $this->get_items_per_page( 'classes_per_page', 5 );
         $current_page = $this->get_pagenum();
@@ -140,5 +146,141 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     
     
         $this->items = self::get_messages( $per_page, $current_page );
+    }
+
+
+
+    public function process_fields($fields){
+        ?>
+<ul>
+    <?php
+        foreach($fields as $key => $field){
+            ?>
+    <li><?php echo "<strong>{$key}</strong> : {$field}" ?></li>
+    <?php
+        }
+        ?>
+</ul>
+<?php
+    }
+
+    public function process_bulk_action() {
+
+        //Detect when a bulk action is being triggered...
+        if ( 'block' === $this->current_action() ) {
+      
+          // In our file that handles the request, verify the nonce.
+          $nonce = esc_attr( $_REQUEST['_wpnonce'] );
+      
+          if ( ! wp_verify_nonce( $nonce, 'bma_block_inbound_message' ) ) {
+            die( 'Go get a life script kiddies' );
+          }
+          else {
+            self::block_inbound_message( absint( $_GET['message'] ) );
+      
+            // wp_safe_redirect( esc_url( add_query_arg() ) );
+            // exit();
+          }
+      
+        }
+      
+        // If the block bulk action is triggered
+        if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-block' )
+             || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-block' )
+        ) {
+      
+          $block_ids = esc_sql( $_POST['bulk'] );
+      
+          // loop over the array of record IDs and block them
+          foreach ( $block_ids as $id ) {
+            self::block_inbound_message( $id );
+          }
+      
+          // wp_safe_redirect( esc_url( add_query_arg() ) );
+          // exit();
+        }
+        if ( 'mailed' === $this->current_action() ) {
+      
+          // In our file that handles the request, verify the nonce.
+          $nonce = esc_attr( $_REQUEST['_wpnonce'] );
+      
+          if ( ! wp_verify_nonce( $nonce, 'bma_mailed_inbound_message' ) ) {
+            die( 'Go get a life script kiddies' );
+          }
+          else {
+            self::mailed_inbound_message( absint( $_GET['message'] ) );
+      
+            // wp_safe_redirect( esc_url( add_query_arg() ) );
+            // exit();
+          }
+      
+        }
+      
+        // If the block bulk action is triggered
+        if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-mailed' )
+             || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-mailed' )
+        ) {
+      
+          $block_ids = esc_sql( $_POST['bulk'] );
+      
+          // loop over the array of record IDs and block them
+          foreach ( $block_ids as $id ) {
+            self::mailed_inbound_message( $id );
+          }
+      
+          // wp_safe_redirect( esc_url( add_query_arg() ) );
+          // exit();
+        }
+        if ( 'pending' === $this->current_action() ) {
+      
+          // In our file that handles the request, verify the nonce.
+          $nonce = esc_attr( $_REQUEST['_wpnonce'] );
+      
+          if ( ! wp_verify_nonce( $nonce, 'bma_pending_inbound_message' ) ) {
+            die( 'Go get a life script kiddies' );
+          }
+          else {
+            self::pending_inbound_message( absint( $_GET['message'] ) );
+      
+            // wp_safe_redirect( esc_url( add_query_arg() ) );
+            // exit();
+          }
+      
+        }
+      
+        // If the block bulk action is triggered
+        if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-pending' )
+             || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-pending' )
+        ) {
+      
+          $block_ids = esc_sql( $_POST['bulk'] );
+      
+          // loop over the array of record IDs and block them
+          foreach ( $block_ids as $id ) {
+            self::pending_inbound_message( $id );
+          }
+      
+          // wp_safe_redirect( esc_url( add_query_arg() ) );
+          // exit();
+        }
+      }
+
+
+    public static function block_inbound_message($id)
+    {
+        BMA_Inbound_Message::block($id);
+        // die('block function called');
+    }
+
+    public static function mailed_inbound_message($id)
+    {
+        BMA_Inbound_Message::mailed($id);
+        // die('block function called');
+    }
+
+    public static function pending_inbound_message($id)
+    {
+        BMA_Inbound_Message::pending($id);
+        // die('block function called');
     }
 }

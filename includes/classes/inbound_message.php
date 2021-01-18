@@ -5,7 +5,7 @@ class BMA_Inbound_Message{
     const mail_sent_status = 'bma_contacted';
     const channel_taxonomy = 'flamingo_inbound_channel';
  
-	private static $found_items = 0;
+	private static $found_items = 0 ;
 
     private $id;
 	public $channel;
@@ -21,7 +21,7 @@ class BMA_Inbound_Message{
 	public $mail_sent;
 	public $mail_sent_log;
     public $consent;
-	public $needed_code;
+	public $input_check;
 	public $details;
 	private $timestamp = null;
     private $hash = null;
@@ -36,9 +36,26 @@ class BMA_Inbound_Message{
 		// ) );
 	}
 
+	public static function findAllPending(){
+		$arr = array(
+			'offset' => 0,
+			'orderby' => 'ID',
+			'order' => 'ASC',
+			'meta_key' => '',
+			'meta_value' => '',
+			'post_status' => 'any',
+			'contacted' => 'pending',
+			'tax_query' => array(),
+			'channel' => '',
+			'channel_id' => 0,
+			'hash' => '',
+		);
+
+		return self::find($arr,true);
+	}
 	public static function find( $args = '' , $array = false) {
 		$defaults = array(
-			'posts_per_page' => 10,
+			// 'posts_per_page' => 10,
 			'offset' => 0,
 			'orderby' => 'ID',
 			'order' => 'ASC',
@@ -94,8 +111,8 @@ class BMA_Inbound_Message{
 		return $objs;
 	}
 
-	public static function count( $args = '' ) {
-		if ( !$args ) {
+	public static function count( $args=  '' ) {
+		if ( $args ) {
 			$args = wp_parse_args( $args, array(
 				'offset' => 0,
 				'channel' => '',
@@ -150,7 +167,7 @@ class BMA_Inbound_Message{
             $this->hash = get_post_meta( $post->ID, '_hash', true );
             if($this->fields && array_key_exists(BMASETTINGS['input_check'], $this->fields))
             {
-                $this->needed_code = $this->fields[BMASETTINGS['input_check']];
+                $this->input_check = $this->fields[BMASETTINGS['input_check']];
             }
 		}
 	}
@@ -188,5 +205,43 @@ class BMA_Inbound_Message{
 
             update_post_meta($post_id,'_mail_sent_log',$previous_log.'\n '.$mail_log);
 	    }
-    }
+	}
+	
+	public static function block($id){
+		global $wpdb;
+		$arr = [
+			'contacted' => 'blocked',
+		];
+		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
+	
+	}
+
+	public static function pending($id){
+		global $wpdb;
+		$arr = [
+			'contacted' => 'pending',
+		];
+		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
+	}
+
+	public static function mailed($id){
+		global $wpdb;
+		$arr = [
+			'contacted' => 'mailed',
+		];
+		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
+	}
+
+	
 }
+
+// $data = array(
+// 	'ID' => $post_id,
+// 	'post_content' => $content,
+// 	'meta_input' => array(
+// 	  'meta_key' => $meta_value,
+// 	  'another_meta_key' => $another_meta_value
+// 	 )
+//    );
+   
+//   wp_update_post( $data );

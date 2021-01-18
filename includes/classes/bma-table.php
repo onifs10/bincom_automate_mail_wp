@@ -205,18 +205,4 @@ class AutomationDetailsTable extends WP_List_Table {
           // exit();
         }
       }
-
-      public function add(){
-        
-      } 
-
-      public function update($id, $details){
-        // example of query 
-        // UPDATE `wp_bincom_automated_mail_details` SET `class_name` = 'test2' WHERE `wp_bincom_automated_mail_details`.`ID` = 14;
-      global $wpdb;
-      $table = self::$table;
-      $replace = 
-      $query = "UPDATE {$table} SET `class_name` = {$details['class_name']}, `class_code` = {$details['class_code']} , `class_starts` = {$details['class_starts']} , `class_days` = {$details['class_days']}, 'class_time' = {$details['class_time']}, `class_link` = {$details['class_link']}, 'class_duration' = {$details['class_duration']} WHERE {$table}.ID = {$id}";
-
-      }
 }

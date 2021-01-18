@@ -36,6 +36,10 @@ function addTextInput($name, $label){
     ?>
 <label for="newClass[<?= $name ?>]" class="label_input column-2:">
     <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
+    <span style="margin:20px; font-size:1em;">
+        you can use this in the template to fill in needeed details from above <br> [class_name] [class_code]
+        [class_days] [class_time] [class_link] [class_starts]
+    </span>
     <textarea style="margin: 5px 0px" rows="20" cols='50' class="large-text" name="newClass[<?= $name ?>]"
         id=""></textarea>
 </label>
@@ -57,6 +61,7 @@ function addTextInput($name, $label){
             <?php addInput('class_link','Class link') ?>
             <?php addInput('class_duration','Class Duration') ?>
             <?php addTextInput('mail_template','Mail Template') ?>
+
             <button type="submit" class="button button-primary" name='add_class'
                 value="<?= wp_create_nonce('add_class')?>"> Add Class </button>
         </form>

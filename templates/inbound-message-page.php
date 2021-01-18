@@ -1,11 +1,11 @@
 <?php
-BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/bma-table.php');
+BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/inbound_message_table.php');
 
-$table = new AutomationDetailsTable();
+$table = new BMA_Inbound_Messages_List_Table();
 
 ?>
 <div class="wrap">
-    <h2>Classes Table <a class="button" href=<?php menu_page_url('bma_add_class') ?>>Add class</a> </h2>
+    <h2>Inbound Messages Table </h2>
 
     <div id="poststuff">
         <div id="post-body" class="metabox-holder">

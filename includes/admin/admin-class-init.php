@@ -29,6 +29,8 @@ class BmaAdminClass extends BincomMailAutomation{
         
         add_submenu_page('bincom_mail_automation_menu','add_class','Add class','manage_options','bma_add_class',[$this,'add_class_sub_menu']);
 
+        $hook2 = add_submenu_page('bincom_mail_automation_menu','inbound_messages','Inbound messages','manage_options','bma_inbound_messages',[$this,'inbound_messages_sub_menu']);
+        add_action( "load-$hook2", [ $this, 'screen_option' ] );
         add_submenu_page('bincom_mail_automation_menu','settings','Settings','manage_options','bma_settings',[$this,'add_class_settings_sub_menu']);
     }
     public function screen_option(){
@@ -55,5 +57,10 @@ class BmaAdminClass extends BincomMailAutomation{
     public function add_class_settings_sub_menu()
     {
         BMA()->load_files(BMA()->get_vars('PATH').'templates/settings.php');
+    }
+
+    public function inbound_messages_sub_menu()
+    {
+        BMA()->load_files(BMA()->get_vars('PATH').'templates/inbound-message-page.php');
     }
 }
