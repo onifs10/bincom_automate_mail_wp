@@ -103,6 +103,7 @@ class BMA_Inbound_Message{
 		if($array){
 			return $posts;
 		}
+		// die(var_dump($posts));
 		$objs = array();
 	
 		foreach ( (array) $posts as $post ) {
@@ -241,7 +242,19 @@ class BMA_Inbound_Message{
 		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
 	}
 
-	
+	public static function send($id){
+
+		global $wpdb;
+		
+		$row = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}posts WHERE `ID` = $id ",OBJECT );
+		if($row)
+		{
+			$message = new self($row);
+			BMA()->getFunctionInstance()->send_mail($message);
+			return true;
+		}
+		return false;
+	}
 }
 
 // $data = array(

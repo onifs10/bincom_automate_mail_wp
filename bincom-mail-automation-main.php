@@ -30,6 +30,10 @@ class BincomMailAutomation{
         $this->init_class();
     }
 
+    public function getFunctionInstance()
+    {
+        return self::$functions;
+    }
     private  function setAdminInstance()
     {
         if(self::$admin == null){
@@ -174,9 +178,3 @@ if(!function_exists('BMA'))
 
 register_activation_hook(__FILE__, [BMA(),'on_activation']);
 register_deactivation_hook( __FILE__, [BMA()::$functions, 'bma_schedule_deactivate'] );
-// register_uninstall_hook(__FILE__, [BMA(),'']) 
-// function example_function(){
-//     $string = 'this is an information of a very basic plugin';
-//     return $string; 
-// }
-// add_shortcode('automation_example','example_function'); // add code that can be used on pages and post 

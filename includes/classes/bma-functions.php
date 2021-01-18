@@ -43,7 +43,7 @@ class BmaFunctions extends BincomMailAutomation{
             }
     }
 
-    private function send_mail($message){
+    public  function send_mail($message){
         if($code = $message->input_check){
             $class =  BincomClasses::findByCode($code);
             if($class){
@@ -60,13 +60,8 @@ class BmaFunctions extends BincomMailAutomation{
                     BMA_Inbound_Message::mailed($message->id());
                 }else{
                     BMA_Inbound_Message::failed($message->id());
-                }           
-                if($previos_log = get_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta)){
-                    $previos_log[] = $log;
-                    update_post_meta($message->id,BMA_Inbound_Message::mail_log_meta,$previos_log);  
-                }else{
-                    update_post_meta($message->id,BMA_Inbound_Message::mail_log_meta,[$log]); 
-                }
+                }          
+                update_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,$log); 
             }   
         }else{
             BMA_Inbound_Message::failed($message->id());
@@ -89,4 +84,3 @@ class BmaFunctions extends BincomMailAutomation{
         return wp_mail( $mail_to, $subject, $mail_body, $headers);
     }
 }
-

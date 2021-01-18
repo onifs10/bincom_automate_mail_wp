@@ -23,7 +23,7 @@ class BmaAdminClass extends BincomMailAutomation{
     }
 
     public function bincommail_automation_admin_menu() {
-        $hook = add_menu_page('bincom_mail_automation','Bincom Mail Automation','manage_options', 'bincom_mail_automation_menu',[$this, 'add_ba_admin_menu'],'',200 );
+        $hook = add_menu_page('bincom_mail_automation','Bincom Mail Automation','manage_options', 'bincom_mail_automation_menu',[$this, 'add_ba_admin_menu'],"dashicons-buddicons-pm",28 );
         
         add_action( "load-$hook", [ $this, 'screen_option' ] );
        

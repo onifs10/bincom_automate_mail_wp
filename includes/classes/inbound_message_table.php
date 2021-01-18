@@ -57,12 +57,14 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         $block_nonce = wp_create_nonce( 'bma_block_inbound_message' );
         $pending_nonce = wp_create_nonce( 'bma_pending_inbound_message' );
         $mailed_nonce = wp_create_nonce( 'bma_mailed_inbound_message' );
+        $send_nonce = wp_create_nonce( 'bma_send_inbound_message' );
         $title = '<strong>' . $item->subject . '</strong>';
     
         $actions = [
         'block' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style = "color:red">block</a>', esc_attr( $_REQUEST['page'] ), 'block', absint( $item->id() ), $block_nonce ),
         'pending' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:blue">mark as pending</a>', esc_attr( $_REQUEST['page'] ), 'pending', absint( $item->id() ), $pending_nonce ),
-        'mailed' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:green">mark as mailed</a>', esc_attr( $_REQUEST['page'] ), 'mailed', absint( $item->id() ), $mailed_nonce )
+        'mailed' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:green">mark as mailed</a>', esc_attr( $_REQUEST['page'] ), 'mailed', absint( $item->id() ), $mailed_nonce ),
+        'send' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:black">Send mail</a>', esc_attr( $_REQUEST['page'] ), 'send', absint( $item->id() ), $send_nonce )
         ];
     
         return $title . $this->row_actions( $actions );
@@ -124,7 +126,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         $actions = [
         'bulk-block' => 'Block',
         'bulk-mailed' => 'mailed',
-        'bulk-pending' => 'pending'
+        'bulk-pending' => 'pending',
+        'bulk-send' => 'send'
         ];
     
         return $actions;
@@ -197,6 +200,38 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
           // loop over the array of record IDs and block them
           foreach ( $block_ids as $id ) {
             self::block_inbound_message( $id );
+          }
+      
+          // wp_safe_redirect( esc_url( add_query_arg() ) );
+          // exit();
+        }
+        if ( 'send' === $this->current_action() ) {
+      
+          // In our file that handles the request, verify the nonce.
+          $nonce = esc_attr( $_REQUEST['_wpnonce'] );
+      
+          if ( ! wp_verify_nonce( $nonce, 'bma_send_inbound_message' ) ) {
+            die( 'Go get a life script kiddies' );
+          }
+          else {
+            self::send_inbound_message( absint( $_GET['message'] ) );
+      
+            // wp_safe_redirect( esc_url( add_query_arg() ) );
+            // exit();
+          }
+      
+        }
+      
+        // If the send bulk action is triggered
+        if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-send' )
+             || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-send' )
+        ) {
+      
+          $send_ids = esc_sql( $_POST['bulk'] );
+      
+          // loop over the array of record IDs and send them
+          foreach ( $send_ids as $id ) {
+            self::send_inbound_message( $id );
           }
       
           // wp_safe_redirect( esc_url( add_query_arg() ) );
@@ -285,5 +320,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     {
         BMA_Inbound_Message::pending($id);
         // die('block function called');
+    }
+
+    public static function send_inbound_message($id){
+      BMA_Inbound_Message::send($id);
     }
 }
