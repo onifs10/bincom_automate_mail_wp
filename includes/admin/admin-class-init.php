@@ -26,6 +26,7 @@ class BmaAdminClass extends BincomMailAutomation{
         $hook = add_menu_page('bincom_mail_automation','Bincom Mail Automation','manage_options', 'bincom_mail_automation_menu',[$this, 'add_ba_admin_menu'],'',200 );
         
         add_action( "load-$hook", [ $this, 'screen_option' ] );
+       
         add_submenu_page('bincom_mail_automation_menu','Classes','all classes','manage_options','bincom_mail_automation_menu',[$this, 'add_ba_admin_menu']);
         
         add_submenu_page('bincom_mail_automation_menu','add_class','Add class','manage_options','bma_add_class',[$this,'add_class_sub_menu']);
@@ -34,7 +35,9 @@ class BmaAdminClass extends BincomMailAutomation{
         add_submenu_page('bincom_mail_automation_menu','test','test','manage_options','test',[$this,'test']);
 
         $hook2 = add_submenu_page('bincom_mail_automation_menu','inbound_messages','Inbound messages','manage_options','bma_inbound_messages',[$this,'inbound_messages_sub_menu']);
+        
         add_action( "load-$hook2", [ $this, 'screen_option' ] );
+        
         add_submenu_page('bincom_mail_automation_menu','settings','Settings','manage_options','bma_settings',[$this,'add_class_settings_sub_menu']);
     }
     public function screen_option(){
@@ -68,6 +71,6 @@ class BmaAdminClass extends BincomMailAutomation{
         BMA()->load_files(BMA()->get_vars('PATH').'templates/inbound-message-page.php');
     }
     public function test(){
-        // BMA()::$functions->mail_cron();
+        BMA()::$functions->mail_cron();
     }
 }

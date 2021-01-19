@@ -48,7 +48,7 @@ class  BincomClasses {
     public static function find($id){
         global $wpdb; 
         $table = self::$table;
-        $sql = "SELECT * FROM  {$table} WHERE ID = {$id}";
+        $sql = "SELECT * FROM  {$table} WHERE ID = '{$id}'";
         $result = $wpdb->get_row( $sql, 'ARRAY_A' );
         $obj  = new self($result);
         return $obj;
@@ -59,11 +59,15 @@ class  BincomClasses {
     public static function findByCode($code){
         global $wpdb; 
         $table = self::$table;
-        $sql = "SELECT * FROM  {$table} WHERE class_code = {$code}";
+        $sql = "SELECT * FROM  {$table} WHERE class_code = '{$code}'";
         $result = $wpdb->get_row( $sql, 'ARRAY_A' );
-        $obj  = new self($result);
-        return $obj;
-    }
+        if($result){
+            $obj  = new self($result);
+            return $obj;
+        }else{
+            return false;
+        }
+       }
 
     
 

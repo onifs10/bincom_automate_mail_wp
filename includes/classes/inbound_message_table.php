@@ -60,9 +60,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         $title = '<strong>' . $item->subject . '</strong>';
     
         $actions = [
-        'block' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">block</a>', esc_attr( $_REQUEST['page'] ), 'block', absint( $item->id() ), $block_nonce ),
-        'pending' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">pending</a>', esc_attr( $_REQUEST['page'] ), 'pending', absint( $item->id() ), $pending_nonce ),
-        'mailed' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s">mark as mailed</a>', esc_attr( $_REQUEST['page'] ), 'mailed', absint( $item->id() ), $mailed_nonce )
+        'block' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style = "color:red">block</a>', esc_attr( $_REQUEST['page'] ), 'block', absint( $item->id() ), $block_nonce ),
+        'pending' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:blue">mark as pending</a>', esc_attr( $_REQUEST['page'] ), 'pending', absint( $item->id() ), $pending_nonce ),
+        'mailed' => sprintf( '<a href="?page=%s&action=%s&message=%s&_wpnonce=%s" style="color:green">mark as mailed</a>', esc_attr( $_REQUEST['page'] ), 'mailed', absint( $item->id() ), $mailed_nonce )
         ];
     
         return $title . $this->row_actions( $actions );
@@ -71,6 +71,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         switch ( $column_name ) {
           case 'ID':
             return $item->id();
+          case 'mail_sent_log':
+            return json_encode($item->$column_name);
           case 'subject':
           case 'from_email':
           case 'from_name':
@@ -100,6 +102,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         'fields'    => __( 'Form Input  Fields', 'bma' ),
         'input_check' => __('Input Checked : <strong>'.BMASETTINGS['input_check']."</strong>",'bma'),
         'contacted' => __('Mail Sent','bma'),
+        'mail_sent_log' => __('Mail sent log', 'bma')
       ];
         return $columns;
     }

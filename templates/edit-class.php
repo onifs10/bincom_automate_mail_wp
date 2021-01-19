@@ -40,6 +40,10 @@ function addTextInput($name, $label, $value){
     ?>
 <label for="newClass[<?= $name ?>]" class="label_input column-2:">
     <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
+    <span style="margin:20px; font-size:1em;">
+        you can use this in the template to fill in needeed details from above <br> [class-name] [class-duration]
+        [class-days] [class-time] [class-link] [class-starts] [recipient-name]
+    </span>
     <textarea style="margin: 5px 0px" rows="20" cols='50' class="large-text" name="updateClass[<?= $name ?>]"
         id=""><?= $value ?></textarea>
 </label>

@@ -20,6 +20,7 @@ class BincomMailAutomation{
     
     public static $functions;
     protected static $_instance = null;
+    public static $admin = null;
     protected $plugin_vars = [];
     public function __construct()
     {
@@ -29,11 +30,24 @@ class BincomMailAutomation{
         $this->init_class();
     }
 
+    private  function setAdminInstance()
+    {
+        if(self::$admin == null){
+            self::$admin = new BmaAdminClass();
+        }
+        return self::$admin;
+    }
+    private function setFunctionInstance(){
+        if(self::$functions == null){
+            self::$functions = new BmaFunctions();
+        }
+        return  self::$functions;
+    }
     private function init_class(){
         if($this->is_request('admin')){
-            $this->admin = new BmaAdminClass();
+            $this->setAdminInstance();
         }
-        self::$functions = new BmaFunctions();
+            $this->setFunctionInstance();
     }
 
     public function defineConstant(){
@@ -117,7 +131,9 @@ class BincomMailAutomation{
         maybe_add_column($wpdb->prefix.'posts','contacted',$sql);
         
         $option = get_option('bma_settings');
-        update_option('bma_settings', $option);    
+        if(!$option){
+            add_option('bma_settings',  ['input_check' => 'default' , 'mail_sender' => 'proservices@bincom.net', 'mail_subject' => 'Bincom Academy ([class_name])']);    
+        }
     }
 
     private function checkTable($table_name, $wpdb){

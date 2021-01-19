@@ -3,7 +3,8 @@
 class BMA_Inbound_Message{
     const post_type = 'flamingo_inbound';
     const mail_sent_status = 'bma_contacted';
-    const channel_taxonomy = 'flamingo_inbound_channel';
+	const channel_taxonomy = 'flamingo_inbound_channel';
+	const mail_log_meta = '_bma_mail_sent_log';
  
 	private static $found_items = 0 ;
 
@@ -51,7 +52,7 @@ class BMA_Inbound_Message{
 			'hash' => '',
 		);
 
-		return self::find($arr,true);
+		return self::find($arr);
 	}
 	public static function find( $args = '' , $array = false) {
 		$defaults = array(
@@ -155,7 +156,7 @@ class BMA_Inbound_Message{
 			$this->akismet = get_post_meta( $post->ID, '_akismet', true );
             $this->recaptcha = get_post_meta( $post->ID, '_recaptcha', true );
             $this->mail_sent = get_post_meta( $post->ID,'_mail_sent');
-			$this->mail_sent_log = get_post_meta( $post->ID, '_mail_sent_log', true );
+			$this->mail_sent_log = get_post_meta( $post->ID, '_bma_mail_sent_log', true );
 			$this->consent = get_post_meta( $post->ID, '_consent', true );
 
 			$terms = wp_get_object_terms( $this->id, self::channel_taxonomy );
@@ -228,6 +229,14 @@ class BMA_Inbound_Message{
 		global $wpdb;
 		$arr = [
 			'contacted' => 'mailed',
+		];
+		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
+	}
+
+	public static function failed($id){
+		global $wpdb;
+		$arr = [
+			'contacted' => 'failed',
 		];
 		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
 	}
