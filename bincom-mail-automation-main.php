@@ -88,7 +88,10 @@ class BincomMailAutomation{
 	}	
     private function load_required_files()
     {
-        $this->load_files($this->get_vars('PATH').'includes/classes/bma-*.php'); 
+        if($this->is_request( 'admin') || $this->is_request('cron')){
+            $this->load_files($this->get_vars('PATH').'includes/classes/bma-*.php');
+        }
+
         if($this->is_request('admin')){
             $this->load_files($this->get_vars('PATH').'includes/admin/admin-class-init.php');            
         }
