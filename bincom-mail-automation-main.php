@@ -47,7 +47,10 @@ class BincomMailAutomation{
         if($this->is_request('admin')){
             $this->setAdminInstance();
         }
+        if($this->is_request( 'admin') || $this->is_request('cron')){
             $this->setFunctionInstance();
+        
+        }
     }
 
     public function defineConstant(){
