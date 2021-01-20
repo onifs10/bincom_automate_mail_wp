@@ -1,7 +1,7 @@
 <?php
 BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/bma-table.php');
 
-$table = new AutomationDetailsTable();
+$table = new AutomationMailDetailsTable();
 
 ?>
 <div class="wrap">

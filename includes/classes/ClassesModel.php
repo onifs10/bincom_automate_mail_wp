@@ -1,6 +1,6 @@
 <?php 
 
-class  BincomClasses {
+class  BincomAutomatedClasses {
     public static $table = BMATABLE;
 
     private $id;

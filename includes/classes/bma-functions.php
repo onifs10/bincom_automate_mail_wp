@@ -45,7 +45,7 @@ class BmaFunctions extends BincomMailAutomation{
 
     public  function send_mail($message){
         if($code = $message->input_check){
-            $class =  BincomClasses::findByCode($code);
+            $class =  BincomAutomatedClasses::findByCode($code);
             if($class){
                 $mail_body = $this->process_mail($class,$message);
                 $mail_to = $message->from_email;

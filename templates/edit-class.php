@@ -1,7 +1,7 @@
 <?php 
 BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
 
-$class = BincomClasses::find($_REQUEST['class']);
+$class = BincomAutomatedClasses::find($_REQUEST['class']);
 
 if(array_key_exists('edit_class', $_POST)){
     $nonce = esc_attr($_POST['edit_class']);
@@ -10,7 +10,7 @@ if(array_key_exists('edit_class', $_POST)){
     };
     $details = $_REQUEST['updateClass'];
     $details['ID'] = $_REQUEST['class'];
-    $class = new BincomClasses($details);
+    $class = new BincomAutomatedClasses($details);
     if($class->update()){
         ?><div style="border-color:green; color:darkgreen; background-color:rgba(144,238,144,0.2);padding: 20px"
     id='setting-error-settings-success' class="updated_settings_error notice is-dismissible">

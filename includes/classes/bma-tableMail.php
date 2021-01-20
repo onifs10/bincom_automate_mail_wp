@@ -4,8 +4,9 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
+BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/BincomAutomatedMails.php');
 
-class AutomationDetailsTable extends WP_List_Table {
+class AutomationMailDetailsTable extends WP_List_Table {
     /** Class construstor */
     public static $table = BMATABLE;
     public function __construct()
@@ -20,10 +21,10 @@ class AutomationDetailsTable extends WP_List_Table {
     }
 
     public static function get_classes($per_page = 5, $page_number = 1){
-       return BincomClasses::findALL($per_page, $page_number, true);
+       return BincomAutomatedClasses::findALL($per_page, $page_number, true);
     }
     public static function delete_class( $id ) {
-       BincomClasses::delete($id);
+       BincomAutomatedClasses::delete($id);
     }
     public static function record_count() {
         global $wpdb;

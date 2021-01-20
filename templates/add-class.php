@@ -1,13 +1,21 @@
 <?php 
 BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
-
-
+BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/BincomAutomatedMails.php');
+//$test = BincomAutomatedMails::add([
+//    'status' => 'publish',
+//    'title' => 'test',
+//    'subject' => 'recruitment_mail',
+//    'content' => ['test' => 'one', 'mail' => 'gmail'],
+//    'input_to_check' => 'role',
+//    'form_to_check_slug' => 'meeting'
+//]);
 if(array_key_exists('add_class', $_POST)){
     $nonce = esc_attr($_POST['add_class']);
     if(! wp_verify_nonce($nonce,'add_class')){
         die( 'Go get a life script dear' );
     };
-    $class = BincomClasses::insert($_POST['newClass']);
+
+    $class = BincomAutomatedClasses::insert($_POST['newClass']);
     if($class){
         ?><div style="border-color:green; color:darkgreen; background-color:rgba(144,238,144,0.2);padding: 20px"
     id='setting-error-settings-success' class="updated_settings_error notice is-dismissible">
@@ -47,6 +55,7 @@ function addTextInput($name, $label){
 }
 ?>
 
+
 <div class='wrap'>
     <h2>Add a new class</h2>
 
@@ -66,3 +75,26 @@ function addTextInput($name, $label){
                 value="<?= wp_create_nonce('add_class')?>"> Add Class </button>
         </form>
     </div>
+</div>
+
+
+<div class='wrap'>
+    <h2>Add a new Mail</h2>
+
+    <div class='metabox-holder'
+         style="display: flex; flex-flow:row wrap; justify-content:start; background-color:rgba(255,255,255,0.2); padding:20px">
+        <form method="post" class='form' style="flex: 0 0 80%; ">
+            <?php addInput('title','Mail Name') ?>
+            <?php addInput('subject','Description') ?>
+            <?php addInput('form_to_check_slug','Form slug') ?>
+            <?php addInput('input_to_check','Input name to check') ?>
+<!--            --><?php //addInput('class_starts','Class Starts') ?>
+<!--            --><?php //addInput('class_link','Class link') ?>
+<!--            --><?php //addInput('class_duration','Class Duration') ?>
+<!--            --><?php //addTextInput('mail_template','Mail Template') ?>
+
+            <button type="submit" class="button button-primary" name='add_class'
+                    value="<?= wp_create_nonce('add_class')?>"> Add Mail </button>
+        </form>
+    </div>
+</div>
