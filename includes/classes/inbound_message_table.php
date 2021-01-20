@@ -78,6 +78,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
           case 'subject':
           case 'from_email':
           case 'from_name':
+          case 'channel':
             return $item->$column_name;
           case 'input_check':
             return $item->$column_name ?? 'null';
@@ -101,6 +102,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         'subject'    => __( 'Subject', 'bma' ),
         'from_email' => __( 'From Email', 'bma' ),
         'from_name'    => __( 'From Name', 'bma' ),
+        'channel' => __('Channel','bma'),
         'fields'    => __( 'Form Input  Fields', 'bma' ),
         'input_check' => __('Input Checked : <strong>'.BMASETTINGS['input_check']."</strong>",'bma'),
         'contacted' => __('Mail Sent','bma'),
@@ -108,7 +110,13 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
       ];
         return $columns;
     }
-
+    public function column_channel($item){
+          $channel_info = $item->channel;
+            ?>
+              <div><strong>name</strong> : <?= $channel_info->name?> </div>
+               <div><strong>slug</strong> : <?= $channel_info->slug?> </div>
+            <?php  
+     }
     protected  function get_sortable_columns() {
         $sortable_columns = [
         'from_email'    => ['from_email', true ],

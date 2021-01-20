@@ -31,6 +31,7 @@ class BincomMailAutomation{
     }
     public function do_admin_init(){
         BincomAutomatedMails::register_post_type();
+        BincomAutomatedMailsTemplates::register_post_type();
     }
     public function getFunctionInstance()
     {
@@ -97,7 +98,7 @@ class BincomMailAutomation{
 	}	
     private function load_required_files()
     {
-        $this->load_files($this->get_vars('PATH').'includes/classes/BincomAutomatedM*.php');
+        $this->load_files($this->get_vars('PATH').'includes/classes/Bincom*.php');
         if($this->is_request( 'admin') || $this->is_request('cron')){
             $this->load_files($this->get_vars('PATH').'includes/classes/bma-*.php');
         }

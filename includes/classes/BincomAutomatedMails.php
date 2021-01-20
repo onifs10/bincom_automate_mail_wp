@@ -13,7 +13,7 @@ class BincomAutomatedMails
     private static $found_items = 0;
 
     private $id;
-    public $name; //description of mail
+    public $name; //mail nam
     public $title;  //mail name
     public $content; //multiple or single
     public $input_to_check;
@@ -38,7 +38,7 @@ class BincomAutomatedMails
             'status' => '',
             'name' => '',
             'title' => '',
-            'content' => array(),
+            'content' => '',
             'timestamp' => null,
             'input_to_check' => '',
             'form_to_check_slug' => ''
@@ -61,17 +61,15 @@ class BincomAutomatedMails
     public  static  function update($id,$args = ''){
         $args = wp_parse_args( $args, array(
             'ID' => $id,
-            'status' => '',
             'name' => '',
             'title' => '',
-            'content' => array(),
+            'content' => '',
             'timestamp' => null,
             'input_to_check' => '',
             'form_to_check_slug' => ''
         ) );
-        $obj = new self();
+        $obj = new self($id);
         $obj->title = $args['title'];
-        $obj->status = $args['status'];
         $obj->name = $args['name'];
         $obj->content = $args['content'];
         $obj->input_to_check = $args['input_to_check'];
@@ -79,13 +77,16 @@ class BincomAutomatedMails
         if ( $args['timestamp'] ) {
             $obj->timestamp = $args['timestamp'];
         }
-        $obj->updatePost();
-        return $obj;
-
+        $done = $obj->updatePost();
+        
+        if($done)
+        {
+            return $obj;
+        }
     }
 
     public static function count( $args = '' ) {
-        if ( $args ) {
+        if ( !empty($args) ) {
             $args = wp_parse_args( $args, array(
                 'offset' => 0,
             ) );
@@ -95,9 +96,9 @@ class BincomAutomatedMails
 
         return absint( self::$found_items );
     }
-    public static function find( $args = '' ) {
+    public static function find( $args = '', $array = false ) {
         $defaults = array(
-//            'posts_per_page' => 10,
+        //    'posts_per_page' => 10,
             'offset' => 0,
             'orderby' => 'ID',
             'order' => 'DESC',
@@ -107,13 +108,14 @@ class BincomAutomatedMails
             'post_status' => 'any',
         );
         $args = wp_parse_args( $args, $defaults );
-
         $args['post_type'] = self::post_type;
         $q = new WP_Query();
         $posts = $q->query( $args );
-
+        
         self::$found_items = $q->found_posts;
-
+        if($array){
+            die(var_dump($posts));
+        }
         $objs = array();
 
         foreach ( (array) $posts as $post ) {
@@ -186,6 +188,7 @@ class BincomAutomatedMails
             $this->updatePostMeta($post_id, self::input_to_check_meta_name,$this->input_to_check);
             $this->updatePostMeta($post_id, self::form_to_check_slug_meta_name,$this->form_to_check_slug);
         }
+        return $post_id;
     }
     private function get_post_date() {
         if ( empty( $this->id ) ) {
@@ -227,21 +230,15 @@ class BincomAutomatedMails
         if ( empty( $this->id ) ) {
             return;
         }
-
+        global $wpdb; 
+        $query = "SELECT ID from $wpdb->posts WHERE post_parent = $this->id ";
         if ( $post = wp_delete_post( $this->id, true ) ) {
             $this->id = 0;
+            $results = $wpdb->get_results($query, OBJECT);
+            foreach($results as $result){
+                wp_delete_post( $result->ID, true);
+            }
         }
-
         return (bool) $post;
-    }
-
-    public  static  function  delete_mail($id){
-        global $wpdb;
-        $table = $wpdb->posts;
-        if(empty($id)){
-            $id = self::$id;
-        }
-        $wpdb->delete($table, ["ID" => $id]);
-        //TODO add to delete the child
     }
 }

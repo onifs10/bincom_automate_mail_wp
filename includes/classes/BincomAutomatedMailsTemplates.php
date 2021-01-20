@@ -24,7 +24,7 @@ class BincomAutomatedMailsTemplates {
             $this->timestamp = $post->post_date_gmt;
             $this->status = $post->post_status;
             $this->parent_id = $post->post_parent;
-            $this->fields = $this->fields_unserialize($this->getPostMeta($post->ID,self::fields_option));
+            $this->fields = $this->getPostMeta($post->ID,self::fields_option);
       }
     }
 
@@ -44,6 +44,7 @@ class BincomAutomatedMailsTemplates {
             'status' => '',
             'subject' => '',
             'title' => '',
+            'name' => 'sample Template',
             'content' => '',
             'timestamp' => null,
             'parent_id' => null,
@@ -56,6 +57,7 @@ class BincomAutomatedMailsTemplates {
         $obj->subject = $args['subject'];
         $obj->content = $args['content'];
         $obj->fields = $args['fields'];
+        $obj->name = $args['name'];
         $obj->parent_id = $args['parent_id'];
         if ( $args['timestamp'] ) {
             $obj->timestamp = $args['timestamp'];
@@ -146,7 +148,7 @@ class BincomAutomatedMailsTemplates {
 
         if($post_id){
             $this->id = $post_id;
-            $fields = $this->fields_serialize($this->fields);
+            $fields = trim($this->fields);
             $this->updatePostMeta($post_id, self::fields_option,$fields);
 //            $this->updatePostMeta($post_id, self::form_to_check_slug_meta_name,$this->form_to_check_slug);
         }
@@ -161,17 +163,23 @@ class BincomAutomatedMailsTemplates {
             'timestamp' => null,
             'fields' => []
         ) );
-        $obj = new self();
+        $obj = new self($id);
         $obj->title = $args['title'];
         $obj->status = $args['status'];
         $obj->name = $args['name'];
         $obj->content = $args['content'];
-        $obj->fields = $obj->fields_serialize($args['fields']);
+        $obj->fields = trim($args['fields']);
         if ( $args['timestamp'] ) {
             $obj->timestamp = $args['timestamp'];
         }
         $obj->updatePost();
         return $obj;
+        $done = $obj->updatePost();
+        
+        if($done)
+        {
+            return $obj;
+        }
 
     }
     public function updatePost(){
@@ -181,19 +189,7 @@ class BincomAutomatedMailsTemplates {
         if($post_id){
             $this->updatePostMeta($post_id, self::fields_option,$this->fields);
         }
-    }
-    public function fields_serialize($data){
-        if( !is_serialized( $data ) ) {
-            $data = maybe_serialize($data);
-        }
-        return $data;
-    }
-
-    public function fields_unserialize($data){
-        if( !is_serialized( $data ) ) {
-            $data = maybe_unserialize($data);
-        }
-        return $data;
+        return $post_id;
     }
 
     private  function updatePostMeta($id, $key, $value ){
@@ -203,6 +199,20 @@ class BincomAutomatedMailsTemplates {
     private  function  getPostMeta($id, $key)
     {
         return get_post_meta($id, $key, true);
+    }
+
+    private function get_post_date() {
+        if ( empty( $this->id ) ) {
+            return false;
+        }
+
+        $post = get_post( $this->id );
+
+        if ( ! $post ) {
+            return false;
+        }
+
+        return $post->post_date;
     }
 
     public function delete() {
@@ -215,13 +225,5 @@ class BincomAutomatedMailsTemplates {
         }
 
         return (bool) $post;
-    }
-    public  static  function  delete_template($id){
-        global $wpdb;
-        $table = $wpdb->posts;
-        if(empty($id)){
-            $id = self::$id;
-        }
-        $wpdb->delete($table, ["ID" => $id,'post_type' => self::post_type]);
     }
 }

@@ -163,7 +163,7 @@ class BMA_Inbound_Message{
 			$terms = wp_get_object_terms( $this->id, self::channel_taxonomy );
 
 			if ( ! empty( $terms ) and ! is_wp_error( $terms ) ) {
-				$this->channel = $terms[0]->slug;
+				$this->channel = $terms[0];
 			}
 
             $this->hash = get_post_meta( $post->ID, '_hash', true );
