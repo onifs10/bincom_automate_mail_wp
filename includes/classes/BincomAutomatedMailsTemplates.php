@@ -12,7 +12,7 @@ class BincomAutomatedMailsTemplates {
     public $content; //template
     public $fields;
     public $status;
-    private $parent_id;
+    public $parent_id;
     private $timestamp = null;
 
     public function __construct( $post = null ) {
@@ -41,7 +41,7 @@ class BincomAutomatedMailsTemplates {
     }
     public  static  function add($args = ''){
         $args = wp_parse_args( $args, array(
-            'status' => '',
+            'status' => 'enabled',
             'subject' => '',
             'title' => '',
             'name' => 'sample Template',
@@ -225,5 +225,22 @@ class BincomAutomatedMailsTemplates {
         }
 
         return (bool) $post;
+    }
+
+    public static function  getTemplateByParentOrInputRequired($parent, $input_required =  null){
+        global $wpdb;
+        $type = self::post_type;
+        if($input_required){
+            $sql = "SELECT * from  {$wpdb->posts} WHERE post_parent = '{$parent}' AND post_title = '{$input_required}' AND  post_type = '{$type}' ";
+            $result = $wpdb->get_row($sql,ARRAY_A);
+        }else{
+            $sql = "SELECT * from  {$wpdb->posts} WHERE post_parent = '{$parent}' AND  post_type = '{$type}' ";
+            $result = $wpdb->get_row($sql,ARRAY_A);
+        }
+        if(isset($result['ID'])) {
+            $obj = new  self($result['ID']);
+            return $obj;
+        }
+        return new self();
     }
 }

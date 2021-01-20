@@ -35,11 +35,12 @@ class BmaFunctions extends BincomMailAutomation{
         BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/inbound_message.php');
 
         BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
-            $inbound = BMA_Inbound_Message::findAllPending();
+            $inbound = BMA_Inbound_Message::getAllPending();
+//            die($inbound);
             foreach($inbound as $message){
                 // var_dump($message);
                 // die();
-                $this->send_mail($message);
+                $this->send_mail_v2($message);
             }
     }
 
@@ -67,7 +68,59 @@ class BmaFunctions extends BincomMailAutomation{
             BMA_Inbound_Message::failed($message->id());
         }
 
-    }  
+    }
+    public  function send_mail_v2($message){
+            $channel = $message->channel->slug;
+            $mails = BincomAutomatedMails::findByFormSLug($channel);
+            if(empty($mails)){
+                BMA_Inbound_Message::failed($message->id());
+                return;
+            }
+            foreach ($mails as $mail){
+                $input_checked = null;
+                if($mail->input_to_check)
+                {
+                    if(array_key_exists($mail->input_to_check,$message->fields)){
+                        $input_checked = $message->fields[$mail->input_to_check];
+                    }else{
+                        $input_checked = 'no_input';
+                    }
+                }
+                $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(),$input_checked);
+                $fields_1st = explode('&&', $template->fields);
+                $replace =  [];
+                $with = [];
+                foreach ($fields_1st as $pairs){
+                    $split = explode('||',$pairs);
+                    $replace[] = '['.($split[0] ? trim($split[0]) : 'test').']';
+                    $with[] = $split[1] ?? 'empty';
+                }
+
+                $replace[] = '[recipient-name]';
+                $with[] = $message->from_name;
+                $sender = BMASETTINGS['mail_sender'];
+                $mail_to = $message->from_email;
+                $subject = str_replace($replace,$with,BMASETTINGS['mail_subject']);
+                $mail_body = str_replace($replace, $with, $template->content);
+                $log = [
+                    'subject' => $subject,
+                    'body' => $mail_body
+                ];
+                $sent = $this->send($mail_to , $sender, $subject, $mail_body);
+                if($sent){
+                    BMA_Inbound_Message::mailed($message->id());
+                }else{
+                    BMA_Inbound_Message::failed($message->id());
+                }
+                $past_log = get_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,true);
+                if($past_log){
+                    $past_log[] = $log;
+                    update_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,$past_log);
+                }else{
+                    update_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,$log);
+                }
+            }
+    }
     
     private function process_mail($class , $inbound_message){
         $mail = $class->mail_template;  

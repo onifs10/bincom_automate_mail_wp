@@ -121,42 +121,12 @@ class BincomMailAutomation{
     }
     public function on_activation()
     {
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        global $wpdb;
-        $tablename = BMATABLE;
-        $main_sql_create = " 
-        CREATE TABLE " . $tablename."(
-            `ID` bigint(20)  NOT NULL AUTO_INCREMENT,
-            `class_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_starts` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_days` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_time` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `mail_template` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            `class_duration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-            PRIMARY KEY  (ID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
-        ";
-        if(!$this->checkTable($tablename,$wpdb)){
-            dbDelta($main_sql_create);
-        }
-        $sql = "ALTER TABLE `{$wpdb->prefix}posts`  ADD `contacted` VARCHAR(255) NULL DEFAULT 'pending'  AFTER `comment_count`;";
-        maybe_add_column($wpdb->prefix.'posts','contacted',$sql);
-        
         $option = get_option('bma_settings');
         if(!$option){
-            add_option('bma_settings',  ['input_check' => 'default' , 'mail_sender' => 'proservices@bincom.net', 'mail_subject' => 'Bincom Academy ([class-name])']);    
+            add_option('bma_settings',  ['input_check' => 'default' , 'mail_sender' => 'proservices@bincom.net', 'mail_subject' => 'Bincom Academy ([mail-subject])']);
         }
     }
 
-    private function checkTable($table_name, $wpdb){
-        if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) === $table_name ) {
-            return true;
-        } else {
-           return false;
-        }
-    }
 
     private function is_request( $type ){
 		switch( $type ){

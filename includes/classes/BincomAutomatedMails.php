@@ -129,7 +129,7 @@ class BincomAutomatedMails
     public function __construct( $post = null ) {
         if ( ! empty( $post ) and $post = get_post( $post ) ) {
             $this->id = $post->ID;
-            $this->content = $this->content_unserialize($post->post_content );
+            $this->content = $post->post_content;
             $this->title = $post->post_title;
             $this->timestamp = $post->post_date_gmt;
             $this->status = $post->post_status;
@@ -204,19 +204,6 @@ class BincomAutomatedMails
         return $post->post_date;
     }
 
-    public function content_serialize($data){
-        if( !is_serialized( $data ) ) {
-            $data = maybe_serialize($data);
-        }
-        return $data;
-    }
-
-    public function content_unserialize($data){
-        if( !is_serialized( $data ) ) {
-            $data = maybe_unserialize($data);
-        }
-        return $data;
-    }
 
     private  function updatePostMeta($id, $key, $value ){
         return update_post_meta($id, $key, $value);
@@ -240,5 +227,20 @@ class BincomAutomatedMails
             }
         }
         return (bool) $post;
+    }
+
+    public static  function findByFormSLug($slug){
+            $array = [
+                'meta_query' =>[
+                    [
+                        'key' => self::form_to_check_slug_meta_name,
+                        'value' => $slug // doesn't work
+                    ]
+                ]
+            ];
+//            var_dump($array);
+//            die();
+
+            return self::find($array);
     }
 }

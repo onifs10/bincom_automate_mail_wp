@@ -39,7 +39,7 @@ class BincomAutomatedMailsTable extends  WP_List_Table{
 			'orderby' => 'ID',
 			'order' => 'DESC'
 		];
-		if($search_name = $_REQUEST[self::search_by_name]){
+		if(array_key_exists(self::search_by_name,$_REQUEST) && $search_name = $_REQUEST[self::search_by_name]){
 			$args = [
 				'post_name' => $search_name
 			];
@@ -88,12 +88,15 @@ class BincomAutomatedMailsTable extends  WP_List_Table{
 
         // create a nonce
         $delete_nonce = wp_create_nonce( 'bma_delete_mail' );
-    
+
         $title = '<strong>' . $item->name . '</strong>';
-    
+        $template_page = menu_page_url('bincom_mail_template_menu',false);
+        $add_template_page = menu_page_url('bma_add_template',false);
         $actions = [
-        'delete' => sprintf( '<a href="?page=%s&action=%s&mail=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item->id() ), $delete_nonce ),
-        'edit' => sprintf( '<a href="?page=%s&action=%s&mail=%s">edit</a>', esc_attr( $_REQUEST['page'] ), 'edit_page', absint( $item->id() ) )
+            'delete' => sprintf( '<a onclick="return confirm(\'are you sure you want to delete this mail if you do, all the templates would be deleted\')"  href="?page=%s&action=%s&mail=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item->id() ), $delete_nonce ),
+            'edit' => sprintf( '<a  href="?page=%s&action=%s&mail=%s">edit</a>', esc_attr( $_REQUEST['page'] ), 'edit_page', absint( $item->id() ) ),
+            'templates' => sprintf( '<a href="%s&mail=%s">templates</a>', $template_page, absint( $item->id() ) ),
+            'add_template' => sprintf( '<a href="%s&mail=%s">Add Templates</a>', $add_template_page, absint( $item->id() ) ),
         ];
     
         return $title . $this->row_actions( $actions );

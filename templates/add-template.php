@@ -1,14 +1,5 @@
 <?php 
 BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
-// BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/BincomAutomatedMails.php');
-// $test = BincomAutomatedMailsTemplates::add([
-//     'name' => 'Academy Mails Template PHPmyAdmin',
-//    'status' => 'enabled',
-//    'title' => 'Mails to send to  academy students in php class',
-//    'content' => 'sample tenmplate',
-//    'parent_id' => '13',
-//    'fields' => 'name||like,date||test'
-// ]);
 
 if(array_key_exists('add_template', $_POST)){
     $nonce = esc_attr($_POST['add_template']);
@@ -30,16 +21,16 @@ if(array_key_exists('add_template', $_POST)){
     }
 
 }
-function addInput($name, $label, $required = true){
+function addInput($name, $label, $default ='' ,$required = true){
     ?>
 <label for="newTemplate[<?= $name ?>]" class="label_input">
     <span style="padding:10px 2px; font-size:1.2em; color:darkblue"><?= $label ?></span>
 </label>
-<input style="margin: 5px 0px" type="text" class="large-text" name="newTemplate[<?= $name ?>]" id="" <?php if($required) {echo" required"; } ?>>
+<input value="<?php echo $default; ?>" style="margin: 5px 0px" type="text" class="large-text" name="newTemplate[<?= $name ?>]" id="" <?php if($required) {echo" required"; } ?>>
 
 <?php
 }
-function addTextInput($name, $label){
+function addTextInput($name, $label, $default =''){
     ?>
 <label for="newTemplate[<?= $name ?>]" class="label_input column-2:">
     <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
@@ -56,7 +47,7 @@ function addMailSelect(){
     {
         $mail = new BincomAutomatedMails($_REQUEST['mail'])
         ?>
-            <input type='hidden' value=<?= $mail->id()?>> 
+            <input name="newTemplate[parent_id]" type='hidden' value=<?= $mail->id()?>>
         <?php
     }else{
         $mails = BincomAutomatedMails::find();
@@ -101,16 +92,16 @@ function addSelect($name, $label , $options){
 
 
 <div class='wrap'>
-    <h2>Add a new Mail</h2>
+    <h2>Add a new Tamplate</h2>
 
     <div class='metabox-holder'
         style="display: flex; flex-flow:row wrap; justify-content:start; background-color:rgba(255,255,255,0.2); padding:20px">
         <form method="post" class='form' style="flex: 0 0 80%; ">
            <div style='display:block; padding:10px 0px'><?php addMailSelect()?> </div>
             <?php addInput('name','Template Name') ?>
-            <?php addInput('title','Template titile ') ?>
-            <?php addInput('fields','input Feilds needed  to fill the template and values seperate fields with comma eg <strong> field-name||value1,field2||value2 </strong>  ') ?>
-            <?php addTextInput('content','Template') ?>
+            <?php addInput('title','Input Value required',false) ?>
+            <?php addInput('fields','input Fields needed  to fill the template and values seperate fields with && eg<strong> field-name&&value1&&field2||value2 </strong>  ', "mail-subject|| Mail Template Subject") ?>
+            <?php addTextInput('content','Template Body') ?>
             <button type="submit" class="button button-primary" name='add_template'
                 value="<?= wp_create_nonce('add_template')?>"> Add Template </button>
         </form>

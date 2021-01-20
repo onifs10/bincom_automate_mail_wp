@@ -80,12 +80,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
           case 'from_name':
           case 'channel':
             return $item->$column_name;
-          case 'input_check':
-            return $item->$column_name ?? 'null';
-          case 'fields':
+        case 'fields':
             return $this->process_fields($item->fields);
-          case 'contacted':
-            return $item->details->$column_name ?? 'no' ;
           default:
             return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
@@ -104,11 +100,21 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         'from_name'    => __( 'From Name', 'bma' ),
         'channel' => __('Channel','bma'),
         'fields'    => __( 'Form Input  Fields', 'bma' ),
-        'input_check' => __('Input Checked : <strong>'.BMASETTINGS['input_check']."</strong>",'bma'),
-        'contacted' => __('Mail Sent','bma'),
+        'status' => __('Mail Sent','bma'),
         'mail_sent_log' => __('Mail sent log', 'bma')
       ];
         return $columns;
+    }
+    public function column_mail_sent_log($item){
+        $string =  substr(json_encode($item->mail_sent_log),0,330);
+        return "
+            <div>
+                   $string
+            </div> 
+        ";
+    }
+    public  function column_status($item){
+        return $item->status;
     }
     public function column_channel($item){
           $channel_info = $item->channel;
@@ -149,7 +155,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         /** Process bulk action */
         $this->process_bulk_action();
     
-        $per_page     = $this->get_items_per_page( 'classes_per_page', 5 );
+        $per_page     = $this->get_items_per_page( 'inbound_messages_per_page', 5 );
         $current_page = $this->get_pagenum();
         $total_items  = self::record_count();
     
@@ -180,7 +186,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 
     public function process_bulk_action() {
 
-        if( !array_key_exists('message', $_GET)){
+
+        if( !isset($_POST['action'])  && !isset($_POST['message'])){
           return;
         }
         //Detect when a bulk action is being triggered...

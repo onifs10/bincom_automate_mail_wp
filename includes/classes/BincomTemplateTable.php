@@ -19,36 +19,42 @@ class BincomTamplateTable extends  WP_List_Table{
 			'cb' => '<input type="checkbox"/>',
 			'ID' => __('Id','bma'),
 			'name' => __('Name' , 'bma'),
-			'title' => __('Mail Title','bma'),
-            'content' => __('Template types', 'bma'),
+            'content' => __('Template', 'bma'),
             'fields' => __('Template Fields','bma'),
+            'title' => __('Input Value for template','bma'),
             'status' => __('Template Status','bma'),
-            'parent_id' => __('template','bma')
+            'parent_id' => __('Tamplate For - Mail ','bma')
 		];
 		return $columns;
     }
     public function column_parent_id($item){
         $post = get_post($item->parent_id);
-        return $post->post_name;
+        return $post ?  $post->post_name : 'none';
     }
 	public function prepare_items()
 	{
 		$this->process_bulk_action();
 		$this->_column_headers = [$this->get_columns(),['ID'],$this->get_sortable_columns(),[]];
       
-		$per_page = $this->get_items_per_page('bma_mail_per_page', 10);
+		$per_page = $this->get_items_per_page('bma_Template_per_page', 10);
 		$args = [
 			'posts_per_page' => $per_page, //remember to set this in the options
 			'offset' => ( $this->get_pagenum() - 1 ) * $per_page,
 			'orderby' => 'ID',
 			'order' => 'DESC'
 		];
-		if($search_name = $_REQUEST[self::search_by_name]){
+		if(array_key_exists(self::search_by_name,$_REQUEST)  && $search_name = $_REQUEST[self::search_by_name]){
 			$args = [
 				'post_name' => $search_name
 			];
 		}
-		if ( ! empty( $_REQUEST['orderby'] ) ) {
+        if(array_key_exists('mail',$_REQUEST)  && $mail_id = $_REQUEST['mail']){
+            $args = [
+                'post_parent' => $mail_id
+            ];
+        }
+
+        if ( ! empty( $_REQUEST['orderby'] ) ) {
 			if ( 'name' == $_REQUEST['orderby'] ) {
 				$args['orderby'] = 'post_name';
 				$args['order'] = $_REQUEST['order'];
@@ -59,8 +65,8 @@ class BincomTamplateTable extends  WP_List_Table{
 		}
 
 
-		$this->items = BincomAutomatedMailsTemplate::find($args);
-		$total_items = BincomAutomatedMailsTemplate::count();
+		$this->items = BincomAutomatedMailsTemplates::find($args);
+		$total_items = BincomAutomatedMailsTemplates::count();
 		$total_pages = ceil( $total_items / $per_page );
 
 		
@@ -79,15 +85,13 @@ class BincomTamplateTable extends  WP_List_Table{
 		case 'name':
 		case 'status':
 		case 'title':
+        case 'fields':
+          case 'template':
         case 'content':
 			return $item->$column_name;
         default:
           return print_r( $item, true ); //Show the whole array for troubleshooting purposes
       }
-    }
-    
-    public function column_fields($item){
-        return json_encode($item->fields);
     }
 	
 	  public function column_name( $item ) {
@@ -98,7 +102,7 @@ class BincomTamplateTable extends  WP_List_Table{
         $title = '<strong>' . $item->name . '</strong>';
     
         $actions = [
-        'delete' => sprintf( '<a href="?page=%s&action=%s&template=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item->id() ), $delete_nonce ),
+        'delete' => sprintf( '<a onclick="return confirm(\'are you sure you want to delete this template\')" href="?page=%s&action=%s&template=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item->id() ), $delete_nonce ),
         'edit' => sprintf( '<a href="?page=%s&action=%s&template=%s">edit</a>', esc_attr( $_REQUEST['page'] ), 'edit_page', absint( $item->id() ) )
         ];
     
@@ -164,11 +168,9 @@ class BincomTamplateTable extends  WP_List_Table{
         }
 	}
 	public static function delete_template($id){
-			$mail = new BincomAutomatedMailsTemplate($id);
+			$mail = new BincomAutomatedMailsTemplates($id);
 			$mail->delete();
     }
-    
-    public static function block_template($id){
-        //TODO block template 
-    } 
+
+
 }

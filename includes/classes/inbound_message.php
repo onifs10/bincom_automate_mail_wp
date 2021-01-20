@@ -19,13 +19,13 @@ class BMA_Inbound_Message{
 	public $meta;
 	public $akismet;
 	public $recaptcha;
-	public $mail_sent;
 	public $mail_sent_log;
     public $consent;
 	public $input_check;
 	public $details;
 	private $timestamp = null;
     private $hash = null;
+    public  $status = 'not at all';
     
     public static function register_post_type() {
 		// register_post_status( self::mail_sent_status, array(
@@ -156,7 +156,6 @@ class BMA_Inbound_Message{
 			$this->meta = get_post_meta( $post->ID, '_meta', true );
 			$this->akismet = get_post_meta( $post->ID, '_akismet', true );
             $this->recaptcha = get_post_meta( $post->ID, '_recaptcha', true );
-            $this->mail_sent = get_post_meta( $post->ID,'_mail_sent');
 			$this->mail_sent_log = get_post_meta( $post->ID, '_bma_mail_sent_log', true );
 			$this->consent = get_post_meta( $post->ID, '_consent', true );
 
@@ -170,6 +169,9 @@ class BMA_Inbound_Message{
             if($this->fields && array_key_exists(BMASETTINGS['input_check'], $this->fields))
             {
                 $this->input_check = $this->fields[BMASETTINGS['input_check']];
+            }
+            if(metadata_exists( 'post', $post->ID, self::mail_sent_status )){
+                $this->status = get_post_meta($post->ID,self::mail_sent_status,true);
             }
 		}
 	}
@@ -210,37 +212,24 @@ class BMA_Inbound_Message{
 	}
 	
 	public static function block($id){
-		global $wpdb;
-		$arr = [
-			'contacted' => 'blocked',
-		];
-		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
-	
+        $status = 'blocked';
+        return self::updateStatus($id,$status);
 	}
 
 	public static function pending($id){
-		global $wpdb;
-		$arr = [
-			'contacted' => 'pending',
-		];
-		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
+        $status = 'pending';
+		return self::updateStatus($id,$status);
 	}
 
 	public static function mailed($id){
-		global $wpdb;
-		$arr = [
-			'contacted' => 'mailed',
-		];
-		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
-	}
+        $status = 'mailed';
+        return self::updateStatus($id,$status);
+    }
 
 	public static function failed($id){
-		global $wpdb;
-		$arr = [
-			'contacted' => 'failed',
-		];
-		return $wpdb->update($wpdb->posts, $arr, ['id' => $id]);
-	}
+        $status = 'failed';
+        return self::updateStatus($id,$status);
+    }
 
 	public static function send($id){
 
@@ -250,11 +239,32 @@ class BMA_Inbound_Message{
 		if($row)
 		{
 			$message = new self($row);
-			BMA()->getFunctionInstance()->send_mail($message);
+			BMA()->getFunctionInstance()->send_mail_v2($message);
 			return true;
 		}
 		return false;
 	}
+	public static  function getAllPending()
+    {
+        $array = [
+            'meta_query' =>[
+                'relation' => 'OR',
+                 [
+                    'key' => self::mail_sent_status,
+                    'compare' => 'NOT EXISTS' // doesn't work
+                ],
+                [
+                    'key' => self::mail_sent_status,
+                    'value' => 'pending'
+                ]
+            ]
+        ];
+
+        return self::find($array);
+    }
+    public static function  updateStatus($id, $value){
+        return update_post_meta($id,self::mail_sent_status,$value);
+    }
 }
 
 // $data = array(
