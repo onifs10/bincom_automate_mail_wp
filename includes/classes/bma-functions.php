@@ -84,7 +84,7 @@ class BmaFunctions extends BincomMailAutomation{
                 $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(),$input_checked);
                 if(!$template->id()){
                     BMA_Inbound_Message::failed($message->id());
-                    return ;
+                    continue ;
                 }
                 $fields_1st = explode('&&', $template->fields);
                 $replace =  [];
