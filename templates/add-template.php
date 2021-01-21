@@ -100,7 +100,7 @@ function addSelect($name, $label , $options){
            <div style='display:block; padding:10px 0px'><?php addMailSelect()?> </div>
             <?php addInput('name','Template Name') ?>
             <?php addInput('title','Input Value required',false) ?>
-            <?php addInput('fields','input Fields needed  to fill the template and values seperate fields with && eg<strong> field-name&&value1&&field2||value2 </strong>  ', "mail-subject|| Mail Template Subject") ?>
+            <?php addInput('fields','input Fields needed  to fill the template and values seperate fields with && eg<strong> field-name&&value1&&field2||value2 </strong>  ', "mail-subject || Mail Template Subject") ?>
             <?php addTextInput('content','Template Body') ?>
             <button type="submit" class="button button-primary" name='add_template'
                 value="<?= wp_create_nonce('add_template')?>"> Add Template </button>
