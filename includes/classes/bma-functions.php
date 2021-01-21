@@ -33,13 +33,8 @@ class BmaFunctions extends BincomMailAutomation{
     public function mail_cron(){
 
         BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/inbound_message.php');
-
-        BMA()->load_files(BMA()->get_vars('PATH').'includes/classes/ClassesModel.php');
             $inbound = BMA_Inbound_Message::getAllPending();
-//            die($inbound);
             foreach($inbound as $message){
-                // var_dump($message);
-                // die();
                 $this->send_mail_v2($message);
             }
     }
@@ -70,8 +65,8 @@ class BmaFunctions extends BincomMailAutomation{
 
     }
     public  function send_mail_v2($message){
-            $channel = $message->channel->slug;
-            $mails = BincomAutomatedMails::findByFormSLug($channel);
+            $channel_slug = $message->channel->slug;
+            $mails = BincomAutomatedMails::findByFormSLug($channel_slug);
             if(empty($mails)){
                 BMA_Inbound_Message::failed($message->id());
                 return;
@@ -87,6 +82,10 @@ class BmaFunctions extends BincomMailAutomation{
                     }
                 }
                 $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(),$input_checked);
+                if(!$template->id()){
+                    BMA_Inbound_Message::failed($message->id());
+                    return ;
+                }
                 $fields_1st = explode('&&', $template->fields);
                 $replace =  [];
                 $with = [];
