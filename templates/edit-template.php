@@ -103,7 +103,7 @@ function addSelect($name, $label , $options){
             <div style='display:block; padding:10px 0px'><?php addMailSelect($template->parent_id)?> </div>
             <?php addInput('name','Template Name',$template->name) ?>
             <?php addInput('title','Input Value required', $template->title) ?>
-            <?php addInput('fields',"input Fields needed  to fill the template and values  separate fields with && eg <strong> field-name||value1&&field2&&value2 </strong>  ", $template->fields) ?>
+            <?php addInput('fields',"input Fields needed  to fill the template and values  separate fields with && eg <strong> field-name||value1&&field2||value2 </strong>  ", $template->fields) ?>
             <?php addTextInput('content','Template',$template->content) ?>
             <button type="submit" class="button button-primary" name='edit_template'
                     value="<?= wp_create_nonce('edit_template')?>"> Update Template </button>
