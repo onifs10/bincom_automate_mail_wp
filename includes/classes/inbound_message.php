@@ -229,7 +229,12 @@ class BMA_Inbound_Message{
 	public static function failed($id){
         $status = 'failed';
         return self::updateStatus($id,$status);
-    }
+	}
+	public static function no_template($id)
+	{	
+		$status = 'no_template';
+		return self::updateStatus($id,$status);
+	}
 
 	public static function send($id){
 

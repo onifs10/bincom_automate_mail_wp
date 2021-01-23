@@ -187,7 +187,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     public function process_bulk_action() {
 
 
-        if( !isset($_POST['action'])  && !isset($_POST['message'])){
+        if( !isset($_POST['action'])  && !isset($_GET['message']) ){
           return;
         }
         //Detect when a bulk action is being triggered...

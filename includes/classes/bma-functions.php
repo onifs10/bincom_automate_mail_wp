@@ -68,22 +68,26 @@ class BmaFunctions extends BincomMailAutomation{
             $channel_slug = $message->channel->slug;
             $mails = BincomAutomatedMails::findByFormSLug($channel_slug);
             if(empty($mails)){
-                BMA_Inbound_Message::failed($message->id());
+                BMA_Inbound_Message::no_template($message->id());
                 return;
             }
             foreach ($mails as $mail){
                 $input_checked = null;
-                if($mail->input_to_check)
+                if($mail->content == 'multiple'){
+                    if($mail->input_to_check)
                 {
                     if(array_key_exists($mail->input_to_check,$message->fields)){
                         $input_checked = $message->fields[$mail->input_to_check];
                     }else{
-                        $input_checked = 'no_input';
+                        BMA_Inbound_Message::no_template($message->id());
+                        return;
                     }
+                }
+                
                 }
                 $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(),$input_checked);
                 if(!$template->id()){
-                    BMA_Inbound_Message::failed($message->id());
+                    BMA_Inbound_Message::no_template($message->id());
                     continue ;
                 }
                 $sender = BMASETTINGS['mail_sender'];
