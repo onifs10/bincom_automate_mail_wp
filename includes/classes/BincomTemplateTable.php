@@ -19,10 +19,10 @@ class BincomTamplateTable extends  WP_List_Table{
 			'cb' => '<input type="checkbox"/>',
 			'ID' => __('Id','bma'),
 			'name' => __('Name' , 'bma'),
-            'content' => __('Template', 'bma'),
-            'fields' => __('Template Fields','bma'),
+            'subject' => __('Mail Subject','bma'),
+            'content' => __('Mail Body', 'bma'),
             'title' => __('Input Value for template','bma'),
-            'status' => __('Template Status','bma'),
+            'status' => __('Template Body Type'),
             'parent_id' => __('Tamplate For - Mail ','bma')
 		];
 		return $columns;
@@ -85,7 +85,7 @@ class BincomTamplateTable extends  WP_List_Table{
 		case 'name':
 		case 'status':
 		case 'title':
-        case 'fields':
+        case 'subject':
           case 'template':
         case 'content':
 			return $item->$column_name;
