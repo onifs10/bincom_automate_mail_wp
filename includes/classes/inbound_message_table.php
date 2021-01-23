@@ -106,12 +106,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         return $columns;
     }
     public function column_mail_sent_log($item){
-        $string =  substr(json_encode($item->mail_sent_log),0,330);
-        return "
-            <div>
-                   $string
-            </div> 
-        ";
+        $string = isset($item->mail_sent_log['body']) ?  substr($item->mail_sent_log['body'],0,3300): "";
+        return htmlspecialchars($string);
     }
     public  function column_status($item){
         return $item->status;

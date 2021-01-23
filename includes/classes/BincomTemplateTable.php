@@ -78,7 +78,7 @@ class BincomTamplateTable extends  WP_List_Table{
 		) );
 		
 	}
-	  public function column_default( $item, $column_name ) {
+   public function column_default( $item, $column_name ) {
       switch ( $column_name ) {
         case 'ID':
 		  return $item->id();
@@ -92,6 +92,10 @@ class BincomTamplateTable extends  WP_List_Table{
         default:
           return print_r( $item, true ); //Show the whole array for troubleshooting purposes
       }
+    }
+
+    public function column_content($item){
+	    return htmlspecialchars($item->content);
     }
 	
 	  public function column_name( $item ) {

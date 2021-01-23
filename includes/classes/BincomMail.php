@@ -51,7 +51,7 @@ class BincomMail
             '<!doctype html>
                 <html xmlns="http://www.w3.org/1999/xhtml">
                 <head>
-                    <title>' . esc_html( $this->get( 'subject', true ) ) . '</title>
+                    <title>' . esc_html( $this->subject ) . '</title>
                 </head>
                 <body>
                     ';
