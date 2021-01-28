@@ -25,7 +25,7 @@ class BMA_Inbound_Message{
 	public $details;
 	private $timestamp = null;
     private $hash = null;
-    public  $status = 'not at all';
+    public  $status;
     
     public static function register_post_type() {
 		// register_post_status( self::mail_sent_status, array(
@@ -41,7 +41,7 @@ class BMA_Inbound_Message{
 		$arr = array(
 			'offset' => 0,
 			'orderby' => 'ID',
-			'order' => 'ASC',
+			'order' => 'DESC',
 			'meta_key' => '',
 			'meta_value' => '',
 			'post_status' => 'any',
@@ -59,7 +59,7 @@ class BMA_Inbound_Message{
 			// 'posts_per_page' => 10,
 			'offset' => 0,
 			'orderby' => 'ID',
-			'order' => 'ASC',
+			'order' => 'DESC',
 			'meta_key' => '',
 			'meta_value' => '',
 			'post_status' => 'any',

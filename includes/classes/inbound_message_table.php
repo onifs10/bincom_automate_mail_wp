@@ -30,7 +30,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 			'posts_per_page' => $per_page,
 			'offset' => ( $page_number - 1 ) * $per_page,
 			'orderby' => $orderby  ?? 'ID',
-			'order' => $order  ?? 'ASC',
+			'order' => $order  ?? 'DESC',
 			'meta_key' => '',
 			'meta_value' => '',
 			'post_status' => 'any',
@@ -114,7 +114,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         ";
     }
     public  function column_status($item){
-        return $item->status;
+        return $item->status ?? 'pending';
     }
     public function column_channel($item){
           $channel_info = $item->channel;
