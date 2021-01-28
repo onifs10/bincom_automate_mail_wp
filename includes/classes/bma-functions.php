@@ -71,57 +71,49 @@ class BmaFunctions extends BincomMailAutomation{
                 BMA_Inbound_Message::no_template($message->id());
                 return;
             }
-            foreach ($mails as $mail){
+            foreach ($mails as $mail) {
                 $input_checked = null;
-                if($mail->content == 'multiple'){
-                    if($mail->input_to_check)
-                {
-                    if(array_key_exists($mail->input_to_check,$message->fields)){
-                        $input_checked = $message->fields[$mail->input_to_check];
-                    }else{
-                        BMA_Inbound_Message::no_template($message->id());
-                        return;
+                if ($mail->content == 'multiple') {
+                    if ($mail->input_to_check) {
+                        if (array_key_exists($mail->input_to_check, $message->fields)) {
+                            $input_checked = $message->fields[$mail->input_to_check];
+                        } else {
+                            BMA_Inbound_Message::no_template($message->id());
+                            return;
+                        }
                     }
-                }
-                
-                }
-                $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(),$input_checked);
-                if(!$template->id()){
-                    BMA_Inbound_Message::no_template($message->id());
-                    continue ;
-                }
-                $fields_1st = explode('&&', $template->fields);
-                $replace =  [];
-                $with = [];
-                foreach ($fields_1st as $pairs){
-                    $split = explode('||',$pairs);
-                    $replace[] = '['.($split[0] ? trim($split[0]) : 'test').']';
-                    $with[] = $split[1] ?? 'empty';
-                }
 
-                $replace[] = '[recipient-name]';
-                $with[] = $message->from_name;
+                }
+                $template = BincomAutomatedMailsTemplates::getTemplateByParentOrInputRequired($mail->id(), $input_checked);
+                if (!$template->id()) {
+                    BMA_Inbound_Message::no_template($message->id());
+                    continue;
+                }
                 $sender = BMASETTINGS['mail_sender'];
                 $mail_to = $message->from_email;
-                $subject = str_replace($replace,$with,BMASETTINGS['mail_subject']);
-                $mail_body = str_replace($replace, $with, $template->content);
-                $log = [
+                $subject = $template->subject;
+                $mail_body = str_replace('[recipient-name]', $message->from_name, $template->content);
+                $use_html = false;
+                if ($template->status == 'html') {
+                    $use_html = true;
+                }
+                $args = [
+                    'html' => $use_html,
                     'subject' => $subject,
-                    'body' => $mail_body
+                    'body' => $mail_body,
+                    'to' => $mail_to,
+                    'from' => $sender
                 ];
-                $sent = $this->send($mail_to , $sender, $subject, $mail_body);
-                if($sent){
+
+                $mail = new BincomMail($args);
+                $sent = $mail->send();
+                if ($sent) {
                     BMA_Inbound_Message::mailed($message->id());
-                }else{
+                } else {
                     BMA_Inbound_Message::failed($message->id());
                 }
-                $past_log = get_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,true);
-                if($past_log){
-                    $past_log[] = $log;
-                    update_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,$past_log);
-                }else{
-                    update_post_meta($message->id(),BMA_Inbound_Message::mail_log_meta,$log);
-                }
+                $log = $mail->details;
+                update_post_meta($message->id(), BMA_Inbound_Message::mail_log_meta, $log);
             }
     }
     

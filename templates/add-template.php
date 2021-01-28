@@ -6,6 +6,7 @@ if(array_key_exists('add_template', $_POST)){
     if(! wp_verify_nonce($nonce,'add_template')){
         die( 'Go get a life script dear' );
     };
+//    die(var_dump($_POST['newTemplate']));
     $class = BincomAutomatedMailsTemplates::add($_POST['newTemplate']);
     if($class){
         ?><div style="border-color:green; color:darkgreen; background-color:rgba(144,238,144,0.2);padding: 20px"
@@ -86,7 +87,17 @@ function addSelect($name, $label , $options){
         </div>
     <?php
 }
-
+function addCheck($name, $label){
+    ?>
+    <div style="display:block;">
+        <label for="newTemplate[<?= $name ?>]" class="label_input">
+            <span style="padding:10px 2px; font-size:1.2em; color:darkblue"><?= $label ?></span>
+        </label>
+        <input value="html"  style="margin: 5px 0px;" type="checkbox"name="newTemplate[<?= $name ?>]" id="" >
+    </div>
+    <?php
+}
+//TODO add use html option;
 ?>
 
 
@@ -100,10 +111,12 @@ function addSelect($name, $label , $options){
            <div style='display:block; padding:10px 0px'><?php addMailSelect()?> </div>
             <?php addInput('name','Template Name') ?>
             <?php addInput('title','Input Value required',false) ?>
-            <?php addInput('fields','input Fields needed  to fill the template and values seperate fields with && eg<strong> field-name||value1&&field2||value2 </strong>  ', "mail-subject || Mail Template Subject") ?>
-            <?php addTextInput('content','Template Body') ?>
+            <?php addInput('fields','Mail Subject', "Bincom Automated Mail") ?>
+            <?php addTextInput('content','Mail Body') ?>
+            <?php addCheck('status','Use Html Template') ?>
             <button type="submit" class="button button-primary" name='add_template'
                 value="<?= wp_create_nonce('add_template')?>"> Add Template </button>
         </form>
     </div>
 </div>
+

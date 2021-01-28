@@ -90,9 +90,17 @@ function addSelect($name, $label , $options){
     <?php
 }
 
+function addCheck($name, $label, $value){
+    ?>
+    <div style="display:block;">
+        <label for="newTemplate[<?= $name ?>]" class="label_input">
+            <span style="padding:10px 2px; font-size:1.2em; color:darkblue"><?= $label ?></span>
+        </label>
+        <input value="html" <?php if($value == 'html') echo 'checked' ;?>  style="margin: 5px 0px;" type="checkbox"name="newTemplate[<?= $name ?>]" id="" >
+    </div>
+    <?php
+}
 ?>
-
-
 
 <div class='wrap'>
     <h2>Edit Template</h2>
@@ -103,8 +111,9 @@ function addSelect($name, $label , $options){
             <div style='display:block; padding:10px 0px'><?php addMailSelect($template->parent_id)?> </div>
             <?php addInput('name','Template Name',$template->name) ?>
             <?php addInput('title','Input Value required', $template->title) ?>
-            <?php addInput('fields',"input Fields needed  to fill the template and values  separate fields with && eg <strong> field-name||value1&&field2||value2 </strong>  ", $template->fields) ?>
-            <?php addTextInput('content','Template',$template->content) ?>
+            <?php addInput('fields',"Mail Subject", $template->fields) ?>
+            <?php addTextInput('content','Mail Body',$template->content) ?>
+            <?php addCheck('status','Use Html Template', $template->status) ?>
             <button type="submit" class="button button-primary" name='edit_template'
                     value="<?= wp_create_nonce('edit_template')?>"> Update Template </button>
         </form>

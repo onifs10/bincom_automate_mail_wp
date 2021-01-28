@@ -11,9 +11,25 @@ class BincomAutomatedMailsTemplates {
     public $title;  //description
     public $content; //template
     public $fields;
-    public $status;
+    public $status; // html or plan text
     public $parent_id;
     private $timestamp = null;
+
+    public function __get($name)
+    {
+        if($name == 'subject') {
+            return $this->fields;
+        }
+        if($name == 'type'){
+            return $this->status;
+        }
+        return  $this->$name;
+    }
+
+    public function __set($name, $value)
+    {
+        // TODO: Implement __set() method.
+    }
 
     public function __construct( $post = null ) {
         if ( ! empty( $post ) and $post = get_post( $post ) ) {
@@ -41,7 +57,7 @@ class BincomAutomatedMailsTemplates {
     }
     public  static  function add($args = ''){
         $args = wp_parse_args( $args, array(
-            'status' => 'enabled',
+            'status' => 'plain',
             'subject' => '',
             'title' => '',
             'name' => 'sample Template',
@@ -54,9 +70,8 @@ class BincomAutomatedMailsTemplates {
 
         $obj->title = $args['title'];
         $obj->status = $args['status'];
-        $obj->subject = $args['subject'];
-        $obj->content = $args['content'];
         $obj->fields = $args['fields'];
+        $obj->content = $args['content'];
         $obj->name = $args['name'];
         $obj->parent_id = $args['parent_id'];
         if ( $args['timestamp'] ) {
@@ -156,7 +171,7 @@ class BincomAutomatedMailsTemplates {
     public  static  function update($id,$args = ''){
         $args = wp_parse_args( $args, array(
             'ID' => $id,
-            'status' => '',
+            'status' => 'plain',
             'name' => '',
             'title' => '',
             'content' => '',
