@@ -101,7 +101,7 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
         'channel' => __('Channel','bma'),
         'fields'    => __( 'Form Input  Fields', 'bma' ),
         'status' => __('Mail Sent Status    ','bma'),
-        'mail_sent_log' => __('Mail sent log', 'bma')
+        // 'mail_sent_log' => __('Mail sent log', 'bma')
       ];
         return $columns;
     }
