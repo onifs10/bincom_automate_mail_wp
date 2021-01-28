@@ -171,6 +171,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 <ul>
     <?php
         foreach($fields as $key => $field){
+          if(is_array($fields)){
+            $fields = json_encode($fields);
+          }
             ?>
     <li><?php echo "<strong>{$key}</strong> : {$field}" ?></li>
     <?php
