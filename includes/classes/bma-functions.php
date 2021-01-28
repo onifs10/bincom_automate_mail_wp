@@ -91,7 +91,6 @@ class BmaFunctions extends BincomMailAutomation{
                 }
                 $sender = BMASETTINGS['mail_sender'];
                 $mail_to = $message->from_email;
-                $subject = $template->subject;
                 $fields = $message->fields;
                 $replace = [];
                 $with = [];
@@ -102,6 +101,7 @@ class BmaFunctions extends BincomMailAutomation{
                 $replace[] = '[recipient-name]';
                 $with[] = $message->from_name; 
                 $mail_body = str_replace($replace,$with, $template->content);
+                $subject = str_replace($replace, $with,$template->subject);
                 $use_html = false;
                 if ($template->status == 'html') {
                     $use_html = true;

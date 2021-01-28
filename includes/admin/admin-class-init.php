@@ -28,9 +28,10 @@ class BmaAdminClass extends BincomMailAutomation{
         add_action( "load-$hook", [ $this, 'mail_screen_option' ] );
        
         add_submenu_page('bincom_mail_automation_menu','Mails','All Mails','manage_options','bincom_mail_automation_menu',[$this, 'add_ba_admin_menu']);
-        add_submenu_page('bincom_mail_automation_menu','Mail Templates','All Template','manage_options','bincom_mail_template_menu',[$this, 'add_ba_template_menu']);
-
+        
         add_submenu_page('bincom_mail_automation_menu','add_mail','Add Mail','manage_options','bma_add_mail',[$this,'add_mail_sub_menu']);
+
+        add_submenu_page('bincom_mail_automation_menu','Mail Templates','All Mail Template','manage_options','bincom_mail_template_menu',[$this, 'add_ba_template_menu']);
 
         add_submenu_page('bincom_mail_automation_menu','add_template','Add Mail Template','manage_options','bma_add_template',[$this,'add_template_sub_menu']);
 
