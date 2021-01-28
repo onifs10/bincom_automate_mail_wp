@@ -39,7 +39,6 @@ class BMA_Inbound_Message{
 
 	public static function findAllPending(){
 		$arr = array(
-			'offset' => 0,
 			'orderby' => 'ID',
 			'order' => 'DESC',
 			'meta_key' => '',
