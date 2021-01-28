@@ -36,7 +36,7 @@ function addTextInput($name, $label, $default =''){
 <label for="newTemplate[<?= $name ?>]" class="label_input column-2:">
     <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
     <span style="margin:20px; font-size:1em;">
-       <br> use this to add template feilds  <br> eg [field-name] <span style="font-size:0.9em; color:darkblue" >replace field-name with the name of the fields you specified above</span> <br> [recipient-name]
+       <br> use this to add template feilds  <br> eg [field-name] <span style="font-size:0.9em; color:darkblue" >replace field-name with the name of feilds from your contact form</span> <br> [recipient-name]
     </span>
     <textarea style="margin: 5px 0px" rows="20" cols='50' class="large-text" name="newTemplate[<?= $name ?>]"
         id=""></textarea>
