@@ -77,6 +77,9 @@ class BmaFunctions extends BincomMailAutomation{
                     if ($mail->input_to_check) {
                         if (array_key_exists($mail->input_to_check, $message->fields)) {
                             $input_checked = $message->fields[$mail->input_to_check];
+                            if(is_array($input_checked)){
+                                $input_checked = $input_checked[0];
+                            }
                         } else {
                             BMA_Inbound_Message::no_template($message->id());
                             return;
@@ -96,7 +99,9 @@ class BmaFunctions extends BincomMailAutomation{
                 $with = [];
                 foreach($fields as $key => $value){
                     $replace[] = '['.$key.']';
-                    $with[] = $value;
+                    if(is_array($value)){
+                        $with[] = $value[0];
+                    }
                 }
                 $replace[] = '[recipient-name]';
                 $with[] = $message->from_name; 

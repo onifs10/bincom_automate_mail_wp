@@ -115,9 +115,9 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
     public function column_channel($item){
           $channel_info = $item->channel;
             ?>
-              <div><strong>name</strong> : <?= $channel_info->name?> </div>
-               <div><strong>slug</strong> : <?= $channel_info->slug?> </div>
-            <?php  
+<div><strong>name</strong> : <?= $channel_info->name?> </div>
+<div><strong>slug</strong> : <?= $channel_info->slug?> </div>
+<?php  
      }
     protected  function get_sortable_columns() {
         $sortable_columns = [
@@ -171,8 +171,8 @@ class BMA_Inbound_Messages_List_Table extends WP_List_Table {
 <ul>
     <?php
         foreach($fields as $key => $field){
-          if(is_array($fields)){
-            $fields = json_encode($fields);
+          if(is_array($field)){
+            $field = json_encode($field);
           }
             ?>
     <li><?php echo "<strong>{$key}</strong> : {$field}" ?></li>
