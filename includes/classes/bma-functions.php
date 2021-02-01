@@ -118,9 +118,8 @@ class BmaFunctions extends BincomMailAutomation{
                     'body' => $mail_body,
                     'to' => $mail_to,
                     'from' => $sender,
-                    'additional_header' => $additional_header,
+                    'additional_headers' => $additional_header,
                 ];
-
                 $mail = new BincomMail($args);
                 $sent = $mail->send();
                 if ($sent) {
