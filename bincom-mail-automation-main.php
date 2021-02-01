@@ -4,7 +4,7 @@
  * @package Automation Plugin 
  * Plugin Name:       Bincom Mail Automation Plugins
  * Plugin URI:        https://bincom.net
- * Description:       Plugin for the blog.bincom.net to send mail  automatically to does that fills a form
+ * Description:       Plugin for the blog.bincom.net to send mail  automatically to those that fills a form
  * Version:           1.0.0
  * Author:            Onifade Boluwatife Basit 
  * Author URI:        https://bincom.net
