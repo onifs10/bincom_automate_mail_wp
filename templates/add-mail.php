@@ -37,15 +37,14 @@ function addInput($name, $label, $required = true){
 
 <?php
 }
-function addTextInput($name, $label){
+function addTextInput($name, $label , $details = ''){
     ?>
 <label for="newMail[<?= $name ?>]" class="label_input column-2:">
     <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
     <span style="margin:20px; font-size:1em;">
-        you can use this in the template to fill in needeed details from above <br> [class-name] [class-duration]
-        [class-days] [class-time] [class-link] [class-starts] [recipient-name]
+        <?=  htmlspecialchars($details)?>
     </span>
-    <textarea style="margin: 5px 0px" rows="20" cols='50' class="large-text" name="newMail[<?= $name ?>]"
+    <textarea style="margin: 5px 0px" rows="3" cols='50' class="large-text" name="newMail[<?= $name ?>]"
         id=""></textarea>
 </label>
 <?php
@@ -84,6 +83,7 @@ function addSelect($name, $label , $options){
         <form method="post" class='form' style="flex: 0 0 80%; ">
             <?php addInput('name','Mail Name') ?>
             <?php addInput('title','Mail titile ') ?>
+            <?php addTextInput('additional_header','Additional Mail Headers', "eg Bcc : Sample  <sample@mail.com> \n Cc : carbon <carbon@gmail.com>  ") ?>
             <?php addSelect('content','Mail Template type',['multiple' => 'Multiple','single' => 'Single']) ?>
             <?php addInput('form_to_check_slug','Form slug to check') ?>
             <?php addInput('input_to_check','Input to Check',false) ?>

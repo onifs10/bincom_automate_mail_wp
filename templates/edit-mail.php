@@ -66,6 +66,18 @@ function addSelect($name, $label, $options)
     <?php
 }
 
+function addTextInput($name, $label , $value,$details = ''){
+    ?>
+    <label for="newMail[<?= $name ?>]" class="label_input column-2:">
+        <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
+        <span style="margin:20px; font-size:1em;">
+        <?=  htmlspecialchars($details)?>
+    </span>
+        <textarea style="margin: 5px 0px" rows="3" cols='50' class="large-text" name="newMail[<?= $name ?>]"
+                  id=""><?= $value ?></textarea>
+    </label>
+    <?php
+}
 ?>
 
 
@@ -77,9 +89,10 @@ function addSelect($name, $label, $options)
         <form method="post" class='form' style="flex: 0 0 80%; ">
             <?php addInput('name', 'Mail Name', $mail->name) ?>
             <?php addInput('title', 'Mail titile ', $mail->title) ?>
+            <?php addTextInput('additional_header','Additional Mail Headers', $mail->additional_header,"eg Bcc : Sample  <sample@mail.com> \n Cc : carbon <carbon@gmail.com>  ") ?>
             <?php addSelect('content', 'Mail Template type', ['multiple' => 'Multiple', 'single' => 'Single']) ?>
             <?php addInput('form_to_check_slug', 'Form slug to check', $mail->form_to_check_slug) ?>
-            <?php addInput('input_to_check', 'Input to Check', $mail->input_to_check, false,) ?>
+            <?php addInput('input_to_check', 'Input to Check', $mail->input_to_check, false) ?>
             <button type="submit" class="button button-primary" name='edit_mail'
                     value="<?= wp_create_nonce('edit_mail') ?>"> Edit Mail
             </button>

@@ -8,6 +8,7 @@ class BincomAutomatedMails
     const input_to_check_meta_name = '_input_to_check';
     const form_to_check_slug_meta_name = '_form_to_check';
     const  templates_type = 'single';
+    const mail_additional_header = 'bma_mail_additional_header';
 
 
     private static $found_items = 0;
@@ -20,6 +21,10 @@ class BincomAutomatedMails
     public $form_to_check_slug;
     public $status;
     private $timestamp = null;
+    /**
+     * @var mixed
+     */
+    public $additional_header;
 
     public static  function register_post_type(){
 
@@ -41,7 +46,8 @@ class BincomAutomatedMails
             'content' => '',
             'timestamp' => null,
             'input_to_check' => '',
-            'form_to_check_slug' => ''
+            'form_to_check_slug' => '',
+            'additional_header' => '',
         ) );
         $obj = new self();
 
@@ -51,6 +57,7 @@ class BincomAutomatedMails
         $obj->content = $args['content'];
         $obj->input_to_check = $args['input_to_check'];
         $obj->form_to_check_slug = $args['form_to_check_slug'];
+        $obj->additional_header = $args['additional_header'];
         if ( $args['timestamp'] ) {
             $obj->timestamp = $args['timestamp'];
         }
@@ -66,7 +73,8 @@ class BincomAutomatedMails
             'content' => '',
             'timestamp' => null,
             'input_to_check' => '',
-            'form_to_check_slug' => ''
+            'form_to_check_slug' => '',
+            'additional_header' => ''
         ) );
         $obj = new self($id);
         $obj->title = $args['title'];
@@ -74,6 +82,7 @@ class BincomAutomatedMails
         $obj->content = $args['content'];
         $obj->input_to_check = $args['input_to_check'];
         $obj->form_to_check_slug = $args['form_to_check_slug'];
+        $obj->additional_header = $args['additional_header'];
         if ( $args['timestamp'] ) {
             $obj->timestamp = $args['timestamp'];
         }
@@ -136,6 +145,7 @@ class BincomAutomatedMails
             $this->name = $post->post_name;
             $this->input_to_check = $this->getPostMeta($post->ID,self::input_to_check_meta_name);
             $this->form_to_check_slug = $this->getPostMeta($post->ID,self::form_to_check_slug_meta_name);
+            $this->additional_header = $this->getPostMeta($post->ID, self::mail_additional_header);
         }
     }
 
@@ -177,6 +187,7 @@ class BincomAutomatedMails
             $this->id = $post_id;
             $this->updatePostMeta($post_id, self::input_to_check_meta_name,$this->input_to_check);
             $this->updatePostMeta($post_id, self::form_to_check_slug_meta_name,$this->form_to_check_slug);
+            $this->updatePostMeta($post_id,self::mail_additional_header,$this->additional_header);
         }
     }
 

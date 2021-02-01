@@ -29,6 +29,10 @@ class BincomMail
      * @var mixed
      */
     public $details;
+    /**
+     * @var mixed
+     */
+    public $additional_headers;
 
     public function __construct($args = '')
     {
@@ -38,12 +42,14 @@ class BincomMail
                     'from' => '',
                     'subject' => '',
                     'body' => '',
+                    'additional_headers'=> '',
             ]);
             $this->from = $details['from'];
             $this->to = $details['to'];
             $this->subject = $details['subject'];
             $this->body = $details['body'];
             $this->html = $details['html'];
+            $this->additional_headers = $details['additional_headers'];
     }
 
     private function htmlize( $body ) {
@@ -82,6 +88,9 @@ class BincomMail
             $headers .= "X-WPCF7-Content-Type: text/html\n";
         } else {
             $headers .= "X-WPCF7-Content-Type: text/plain\n";
+        }
+        if($this->additional_headers){
+            $headers .= $this->additional_headers;
         }
         $this->details = ['subject' => $subject, 'body' => $body];
         return wp_mail( $to, $subject, $body, $headers);
