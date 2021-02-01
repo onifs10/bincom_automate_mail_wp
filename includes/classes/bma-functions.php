@@ -101,6 +101,8 @@ class BmaFunctions extends BincomMailAutomation{
                     $replace[] = '['.$key.']';
                     if(is_array($value)){
                         $with[] = $value[0];
+                    }else{
+                        $with = $value;
                     }
                 }
                 $replace[] = '[recipient-name]';
