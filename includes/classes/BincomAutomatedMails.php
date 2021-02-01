@@ -198,6 +198,7 @@ class BincomAutomatedMails
         if($post_id){
             $this->updatePostMeta($post_id, self::input_to_check_meta_name,$this->input_to_check);
             $this->updatePostMeta($post_id, self::form_to_check_slug_meta_name,$this->form_to_check_slug);
+            $this->updatePostMeta($post_id, self::mail_additional_header, $this->additional_header);
         }
         return $post_id;
     }

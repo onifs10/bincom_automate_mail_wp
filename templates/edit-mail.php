@@ -68,12 +68,12 @@ function addSelect($name, $label, $options)
 
 function addTextInput($name, $label , $value,$details = ''){
     ?>
-    <label for="newMail[<?= $name ?>]" class="label_input column-2:">
+    <label for="updateMail[<?= $name ?>]" class="label_input column-2:">
         <span style="padding:10px 0px; font-size:1.2em; color:darkblue"> <?= $label ?></span>
         <span style="margin:20px; font-size:1em;">
         <?=  htmlspecialchars($details)?>
     </span>
-        <textarea style="margin: 5px 0px" rows="3" cols='50' class="large-text" name="newMail[<?= $name ?>]"
+        <textarea style="margin: 5px 0px" rows="3" cols='50' class="large-text" name="updateMail[<?= $name ?>]"
                   id=""><?= $value ?></textarea>
     </label>
     <?php

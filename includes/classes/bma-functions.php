@@ -104,6 +104,7 @@ class BmaFunctions extends BincomMailAutomation{
                     }
                 }
                 $replace[] = '[recipient-name]';
+                $additional_header = $mail->additional_header;
                 $with[] = $message->from_name; 
                 $mail_body = str_replace($replace,$with, $template->content);
                 $subject = str_replace($replace, $with,$template->subject);
@@ -116,7 +117,8 @@ class BmaFunctions extends BincomMailAutomation{
                     'subject' => $subject,
                     'body' => $mail_body,
                     'to' => $mail_to,
-                    'from' => $sender
+                    'from' => $sender,
+                    'additional_header' => $additional_header,
                 ];
 
                 $mail = new BincomMail($args);

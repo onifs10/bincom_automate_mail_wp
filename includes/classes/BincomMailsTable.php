@@ -24,6 +24,7 @@ class BincomAutomatedMailsTable extends  WP_List_Table{
 			'content' => __('Template types', 'bma'),
 			'form_to_check_slug' => __('Form to Check','bma'),
 			'input_to_check' => __('Input field checked','bma'),
+            'additional_header' => __('Additional Headers','bma'),
 		];
 		return $columns;
 	}
@@ -76,9 +77,10 @@ class BincomAutomatedMailsTable extends  WP_List_Table{
 		case 'status':
 		case 'title':
 		case 'content':
+          case 'additional_header':
 		case 'form_to_check_slug':
 		case 'input_to_check':
-			return $item->$column_name;
+			return htmlspecialchars($item->$column_name);
         default:
           return print_r( $item, true ); //Show the whole array for troubleshooting purposes
       }
