@@ -1,11 +1,7 @@
 <?php
 BMA()->load_files(BMA()->get_vars('PATH') . 'includes/classes/ClassesModel.php');
 
-if (!array_key_exists('mail', $_REQUEST)) {
-    die('pls select mail to edit');
-}
 $mail = new BincomAutomatedMails($_REQUEST['mail']);
-// die(var_dump($mail));
 if (array_key_exists('edit_mail', $_POST)) {
     $nonce = esc_attr($_POST['edit_mail']);
     if (!wp_verify_nonce($nonce, 'edit_mail')) {
@@ -27,7 +23,6 @@ if (array_key_exists('edit_mail', $_POST)) {
             <strong> Class Was Not Updated</strong>
         </div><?php
     }
-
 }
 
 function addInput($name, $label, $value, $required = true)
@@ -37,9 +32,11 @@ function addInput($name, $label, $value, $required = true)
         <span style="padding:10px 2px; font-size:1.2em; color:darkblue"><?= $label ?></span>
     </label>
     <input value=<?= $value ?> style="margin: 5px
-           0px" type="text" class="large-text" name="updateMail[<?= $name ?>]" id="" <?php if ($required) {
-    echo " required";
-} ?>>
+           0px" type="text" class="large-text" name="updateMail[<?= $name ?>]" id="" 
+        <?php if ($required) {
+            echo " required";
+        }      
+    ?>>
 
     <?php
 }
@@ -87,7 +84,7 @@ function addTextInput($name, $label , $value,$details = ''){
     <div class='metabox-holder'
          style="display: flex; flex-flow:row wrap; justify-content:start; background-color:rgba(255,255,255,0.2); padding:20px">
         <form method="post" class='form' style="flex: 0 0 80%; ">
-            <?php addInput('name', 'Mail Name', $mail->name) ?>
+            <?php addInput('name', 'Mail Name', $mail->name ) ?>
             <?php addInput('title', 'Mail titile ', $mail->title) ?>
             <?php addTextInput('additional_header','Additional Mail Headers', $mail->additional_header,"eg Bcc : Sample  <sample@mail.com> \n Cc : carbon <carbon@gmail.com>  ") ?>
             <?php addSelect('content', 'Mail Template type', ['multiple' => 'Multiple', 'single' => 'Single']) ?>

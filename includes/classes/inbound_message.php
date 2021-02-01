@@ -66,6 +66,7 @@ class BMA_Inbound_Message{
 			'channel' => '',
 			'channel_id' => 0,
 			'hash' => '',
+
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -261,7 +262,13 @@ class BMA_Inbound_Message{
                     'key' => self::mail_sent_status,
                     'value' => 'pending'
                 ]
-            ]
+			],
+			'date_query' => array(
+                array(
+            			'column' => 'post_date_gmt',
+            			'before' => '24 hours ago',
+        			),
+            )
         ];
 
         return self::find($array);
