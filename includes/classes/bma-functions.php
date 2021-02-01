@@ -102,7 +102,7 @@ class BmaFunctions extends BincomMailAutomation{
                     if(is_array($value)){
                         $with[] = $value[0];
                     }else{
-                        $with = $value;
+                        $with[] = $value;
                     }
                 }
                 $replace[] = '[recipient-name]';
