@@ -92,7 +92,7 @@ class BincomMail
         if($this->additional_headers){
             $headers .= $this->additional_headers;
         }
-        $this->details = ['subject' => $subject, 'body' => $body];
+        $this->details = ['subject' => $subject, 'body' => $body ,'header' => $headers];
         return wp_mail( $to, $subject, $body, $headers);
     }
 }
