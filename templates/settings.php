@@ -23,7 +23,6 @@ function addInput($name, $label, $value){
 <div>
     <form method='POST'>
         <?php addInput('mail_sender','Mail Sender', $settings['mail_sender'] )?>
-        <?php addInput('mail_subject','Mail Subject', $settings['mail_subject'] )?>
         <button type="submit" class="button button-primary" name='submit_bma_settings'
             value="<?= wp_create_nonce('update_bma_settings')?>">Update Settings </button>
     </form>
