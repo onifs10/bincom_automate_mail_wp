@@ -91,7 +91,7 @@ function addTextInput($name, $label , $value,$details = ''){
             <?php addInput('form_to_check_slug', 'Form slug to check', $mail->form_to_check_slug) ?>
             <?php addInput('input_to_check', 'Input to Check', $mail->input_to_check, false) ?>
             <button type="submit" class="button button-primary" name='edit_mail'
-                    value="<?= wp_create_nonce('edit_mail') ?>"> Edit Mail
+                    value="<?= wp_create_nonce('edit_mail') ?>"> Update Mail
             </button>
         </form>
     </div>
